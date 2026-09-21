@@ -34,12 +34,6 @@ A modern, production-grade **GPA + CGPA + Degree Class Prediction + Academic Pla
 *Pre-configured grading systems for Sri Lankan UGC standard and top state/private universities (SLIIT, NSBM, IIT, Colombo, Moratuwa, USJ, Kelaniya, Peradeniya).*
 
 ![University Grading Scales](docs/screenshots/grading-scales.png)
-
-### 5. Night Mode (Sleek Dark Theme)
-*High-contrast dark mode tailored for late-night study sessions with reduced glare and full accessibility compliance.*
-
-![GPA Mate LK Dark Mode Dashboard](docs/screenshots/dashboard-dark.png)
-
 ---
 
 ## 🌟 Key Features
