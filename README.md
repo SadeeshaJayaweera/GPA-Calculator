@@ -13,6 +13,35 @@ A modern, production-grade **GPA + CGPA + Degree Class Prediction + Academic Pla
 
 ---
 
+## 📸 Application Screenshots
+
+### 1. Dashboard & Cumulative GPA Calculator (Clean White HCI Theme)
+*Ergonomic, distraction-free interface with real-time degree classification progress bar, credit summary metrics, semester tabs, and live grade-point calculations.*
+
+![GPA Mate LK Dashboard Light Mode](docs/screenshots/dashboard-light.png)
+
+### 2. Academic Target & "What-If" Scenario Sandbox
+*Determine exact required future GPA to reach target degree classes (First Class, 2:1, 2:2) alongside interactive future module simulations with customizable credit weighting.*
+
+![Target and Scenario Planner](docs/screenshots/planner.png)
+
+### 3. Google Gemini AI Academic Advisor
+*Intelligent conversational assistant powered by Google Gemini, grounded with verified deterministic mathematical calculations for strategic academic planning and study guidance.*
+
+![Google Gemini AI Academic Advisor](docs/screenshots/ai-advisor.png)
+
+### 4. University Grading Scale Presets & Custom Classification Cutoffs
+*Pre-configured grading systems for Sri Lankan UGC standard and top state/private universities (SLIIT, NSBM, IIT, Colombo, Moratuwa, USJ, Kelaniya, Peradeniya).*
+
+![University Grading Scales](docs/screenshots/grading-scales.png)
+
+### 5. Night Mode (Sleek Dark Theme)
+*High-contrast dark mode tailored for late-night study sessions with reduced glare and full accessibility compliance.*
+
+![GPA Mate LK Dark Mode Dashboard](docs/screenshots/dashboard-dark.png)
+
+---
+
 ## 🌟 Key Features
 
 ### 1. Credit-Weighted Deterministic GPA & CGPA Engine

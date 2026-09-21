@@ -11,6 +11,7 @@
     "build": "tsc && vite build",
     "test": "vitest run",
     "test:watch": "vitest",
+    "capture:screenshots": "node scripts/captureScreenshots.js",
     "start": "tsx server/src/index.ts"
   },
   "keywords": [],
@@ -42,6 +43,7 @@
     "autoprefixer": "^10.6.1",
     "concurrently": "^9.2.4",
     "postcss": "^8.5.28",
+    "puppeteer": "^24.43.1",
     "tailwindcss": "^4.3.3",
     "tsx": "^4.23.15",
     "typescript": "^7.0.2",
