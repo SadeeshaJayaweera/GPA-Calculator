@@ -33,7 +33,7 @@ import {
   calculateTotalWeightedPoints,
   calculateClassification,
 } from './lib/gpaCalculator';
-import { Sparkles, HelpCircle, GraduationCap } from 'lucide-react';
+import { Sparkles, HelpCircle, GraduationCap, Download } from 'lucide-react';
 
 export const App: React.FC = () => {
   // Navigation tab
@@ -363,6 +363,19 @@ export const App: React.FC = () => {
                 completedCredits={totalCredits}
                 remainingCredits={Math.max(120 - totalCredits, 0)}
               />
+
+              {/* Download Feature */}
+              {semesters.some(s => s.subjects.length > 0) && (
+                <div className="flex justify-center pt-8 pb-4">
+                  <button
+                    onClick={() => setIsExportModalOpen(true)}
+                    className="flex items-center gap-2 px-6 py-3.5 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-bold shadow-lg shadow-purple-600/20 transition-all hover:scale-[1.02] active:scale-[0.98]"
+                  >
+                    <Download className="w-5 h-5" />
+                    <span>Download Final Academic Report (PDF)</span>
+                  </button>
+                </div>
+              )}
             </div>
 
             {/* Right Sidebar (Col 4) */}

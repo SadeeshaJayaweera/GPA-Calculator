@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { X, Printer, Copy, Check, Download, FileText } from 'lucide-react';
 import { ClassificationRule, GradingScale, Semester } from '../../types/academic';
 import { calculateSemesterGPA, calculateSubjectWeightedPoints, getGradePoint } from '../../lib/gpaCalculator';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 
 interface ExportReportModalProps {
   isOpen: boolean;
@@ -111,11 +113,75 @@ Generated via GPA Mate LK (Developed by Sadeesha Jayaweera)`;
               <span>Export CSV</span>
             </button>
             <button
+              onClick={() => {
+                const doc = new jsPDF();
+                doc.setFontSize(18);
+                doc.text("Academic Transcript & GPA Record", 14, 22);
+                doc.setFontSize(11);
+                doc.setTextColor(100);
+                doc.text(`${universityName} • Sri Lankan Undergraduate Academic Model`, 14, 30);
+                
+                doc.setFontSize(12);
+                doc.setTextColor(0);
+                doc.text(`Cumulative GPA: ${cgpa.toFixed(2)}`, 14, 45);
+                doc.text(`Degree Classification: ${classification.name}`, 14, 52);
+                doc.text(`Total Completed Credits: ${totalCredits}`, 14, 59);
+                doc.text(`Total Completed Subjects: ${semesters.reduce((acc, sem) => acc + sem.subjects.length, 0)}`, 14, 66);
+                doc.text(`Total Weighted Points: ${totalWeightedPoints}`, 14, 73);
+
+                let startY = 85;
+
+                semesters.forEach((sem) => {
+                  const semGPA = calculateSemesterGPA(sem.subjects, gradingScale);
+                  const semCredits = sem.subjects.reduce((sum, s) => sum + (Number(s.credits) || 0), 0);
+                  
+                  doc.setFontSize(14);
+                  doc.setTextColor(0);
+                  doc.text(`${sem.name}`, 14, startY);
+                  doc.setFontSize(10);
+                  doc.setTextColor(100);
+                  doc.text(`Credits: ${semCredits} | Semester GPA: ${semGPA.toFixed(2)}`, 14, startY + 6);
+                  
+                  const tableData = sem.subjects.map(subj => {
+                    const gp = getGradePoint(subj.grade, gradingScale);
+                    const weighted = calculateSubjectWeightedPoints(subj.credits, gp);
+                    return [
+                      subj.name || 'Untitled Module',
+                      subj.credits.toString(),
+                      subj.grade,
+                      weighted.toFixed(1)
+                    ];
+                  });
+
+                  autoTable(doc, {
+                    startY: startY + 10,
+                    head: [['Subject', 'Credits', 'Grade', 'Points']],
+                    body: tableData,
+                    theme: 'grid',
+                    styles: { fontSize: 10 },
+                    headStyles: { fillColor: [107, 33, 168] },
+                  });
+
+                  startY = (doc as any).lastAutoTable.finalY + 15;
+                  if (startY > 270) {
+                    doc.addPage();
+                    startY = 20;
+                  }
+                });
+
+                doc.save(`Academic_Transcript_Summary_${new Date().toISOString().slice(0, 10)}.pdf`);
+              }}
+              className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-purple-600 hover:bg-purple-700 text-xs font-bold text-white shadow-sm transition-colors"
+            >
+              <Download className="w-3.5 h-3.5" />
+              <span>Download PDF</span>
+            </button>
+            <button
               onClick={handlePrint}
               className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-purple-600 hover:bg-purple-700 text-xs font-bold text-white shadow-sm transition-colors"
             >
               <Printer className="w-3.5 h-3.5" />
-              <span>Print / Save PDF</span>
+              <span>Print</span>
             </button>
           </div>
         </div>
