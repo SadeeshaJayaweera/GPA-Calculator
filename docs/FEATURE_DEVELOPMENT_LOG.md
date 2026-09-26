@@ -5,3 +5,4 @@
 - Iteration 4: test: add unit test for gpa sync (iteration 4)
 - Iteration 5: docs: update inline comments (iteration 5)
 - Iteration 6: refactor: extract helper function for auth (iteration 6)
+- Iteration 7: perf: memoize expensive calculations (iteration 7)
