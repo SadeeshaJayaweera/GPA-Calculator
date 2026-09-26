@@ -39,3 +39,4 @@
 - Iteration 38: style: align navbar icons (iteration 38)
 - Iteration 39: chore: update linting rules (iteration 39)
 - Iteration 40: refactor: optimize rendering cycle (iteration 40)
+- Iteration 41: style: update modal padding and margins (iteration 41)
