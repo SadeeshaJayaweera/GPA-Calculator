@@ -2,3 +2,4 @@
 - Iteration 1: style: update modal padding and margins (iteration 1)
 - Iteration 2: chore: clean up console logs (iteration 2)
 - Iteration 3: fix: handle edge case in auth listener (iteration 3)
+- Iteration 4: test: add unit test for gpa sync (iteration 4)
