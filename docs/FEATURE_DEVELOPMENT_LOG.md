@@ -156,3 +156,4 @@
 - Iteration 155: docs: update inline comments (iteration 155)
 - Iteration 156: refactor: extract helper function for auth (iteration 156)
 - Iteration 157: perf: memoize expensive calculations (iteration 157)
+- Iteration 158: style: align navbar icons (iteration 158)
