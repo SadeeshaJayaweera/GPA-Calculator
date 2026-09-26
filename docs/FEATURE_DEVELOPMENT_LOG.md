@@ -86,3 +86,4 @@
 - Iteration 85: docs: update inline comments (iteration 85)
 - Iteration 86: refactor: extract helper function for auth (iteration 86)
 - Iteration 87: perf: memoize expensive calculations (iteration 87)
+- Iteration 88: style: align navbar icons (iteration 88)
