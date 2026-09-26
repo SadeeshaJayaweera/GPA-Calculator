@@ -123,3 +123,4 @@
 - Iteration 122: chore: clean up console logs (iteration 122)
 - Iteration 123: fix: handle edge case in auth listener (iteration 123)
 - Iteration 124: test: add unit test for gpa sync (iteration 124)
+- Iteration 125: docs: update inline comments (iteration 125)
