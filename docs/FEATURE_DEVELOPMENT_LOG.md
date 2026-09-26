@@ -87,3 +87,4 @@
 - Iteration 86: refactor: extract helper function for auth (iteration 86)
 - Iteration 87: perf: memoize expensive calculations (iteration 87)
 - Iteration 88: style: align navbar icons (iteration 88)
+- Iteration 89: chore: update linting rules (iteration 89)
