@@ -82,3 +82,4 @@
 - Iteration 81: style: update modal padding and margins (iteration 81)
 - Iteration 82: chore: clean up console logs (iteration 82)
 - Iteration 83: fix: handle edge case in auth listener (iteration 83)
+- Iteration 84: test: add unit test for gpa sync (iteration 84)
