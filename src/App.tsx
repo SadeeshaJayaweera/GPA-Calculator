@@ -12,6 +12,7 @@ import { ScenarioSandbox } from './components/planner/ScenarioSandbox';
 import { AIAdvisorChat } from './components/ai/AIAdvisorChat';
 import { AcademicCharts } from './components/charts/AcademicCharts';
 import { GradingSettingsModal } from './components/settings/GradingSettingsModal';
+import { AISettingsModal } from './components/settings/AISettingsModal';
 import { ExportReportModal } from './components/export/ExportReportModal';
 import { AboutSection } from './components/about/AboutSection';
 import {
@@ -32,10 +33,14 @@ import {
   calculateTotalCredits,
   calculateTotalWeightedPoints,
   calculateClassification,
-} from './lib/gpaCalculator';
+import { calculateClassification } from './lib/gpaCalculator';
 import { Sparkles, HelpCircle, GraduationCap, Download } from 'lucide-react';
+import { useAuth } from './contexts/AuthContext';
+import { fetchUserData, saveUserData } from './lib/db';
 
 export const App: React.FC = () => {
+  const { currentUser } = useAuth();
+  
   // Navigation tab
   const [activeTab, setActiveTab] = useState<'calculator' | 'planner' | 'ai' | 'grading' | 'about'>('calculator');
 
@@ -93,23 +98,49 @@ export const App: React.FC = () => {
 
   const [activeSemesterId, setActiveSemesterId] = useState<string | 'all'>('all');
 
-  // Persist changes
+  // Sync with Firestore when User Logs In
+  useEffect(() => {
+    if (currentUser) {
+      fetchUserData(currentUser.uid).then((data) => {
+        if (data) {
+          if (data.semesters && data.semesters.length > 0) setSemesters(data.semesters);
+          if (data.classificationRules) setClassificationRules(data.classificationRules);
+          if (data.gradingScaleId) {
+            const found = AVAILABLE_GRADING_SCALES.find((s) => s.id === data.gradingScaleId);
+            if (found) setCurrentGradingScale(found);
+          }
+        }
+      });
+    }
+  }, [currentUser]);
+
+  // Persist changes to LocalStorage & Firestore
   useEffect(() => {
     localStorage.setItem('gpa_semesters_data', JSON.stringify(semesters));
-  }, [semesters]);
+    if (currentUser) {
+      saveUserData(currentUser.uid, { semesters });
+    }
+  }, [semesters, currentUser]);
 
   useEffect(() => {
     localStorage.setItem('gpa_grading_scale_id', currentGradingScale.id);
-  }, [currentGradingScale]);
+    if (currentUser) {
+      saveUserData(currentUser.uid, { gradingScaleId: currentGradingScale.id });
+    }
+  }, [currentGradingScale, currentUser]);
 
   useEffect(() => {
     localStorage.setItem('gpa_classification_rules', JSON.stringify(classificationRules));
-  }, [classificationRules]);
+    if (currentUser) {
+      saveUserData(currentUser.uid, { classificationRules });
+    }
+  }, [classificationRules, currentUser]);
 
   // Modals state
   const [isHowItCalculatedOpen, setIsHowItCalculatedOpen] = useState(false);
   const [isGradingModalOpen, setIsGradingModalOpen] = useState(false);
   const [isExportModalOpen, setIsExportModalOpen] = useState(false);
+  const [isAISettingsOpen, setIsAISettingsOpen] = useState(false);
 
   // Deterministic calculations
   const cgpa = calculateCGPA(semesters, currentGradingScale);
@@ -274,6 +305,7 @@ export const App: React.FC = () => {
         onLoadSampleData={handleLoadSampleData}
         onResetData={handleResetData}
         onOpenExport={() => setIsExportModalOpen(true)}
+        onOpenAISettings={() => setIsAISettingsOpen(true)}
         selectedUniversityName={currentGradingScale.university}
       />
 
@@ -494,6 +526,11 @@ export const App: React.FC = () => {
         classificationRules={classificationRules}
         onUpdateClassificationRule={handleUpdateClassificationRule}
         onResetClassificationRules={handleResetClassificationRules}
+      />
+
+      <AISettingsModal 
+        isOpen={isAISettingsOpen}
+        onClose={() => setIsAISettingsOpen(false)}
       />
 
       <ExportReportModal
