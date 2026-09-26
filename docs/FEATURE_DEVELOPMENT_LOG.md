@@ -34,3 +34,4 @@
 - Iteration 33: fix: handle edge case in auth listener (iteration 33)
 - Iteration 34: test: add unit test for gpa sync (iteration 34)
 - Iteration 35: docs: update inline comments (iteration 35)
+- Iteration 36: refactor: extract helper function for auth (iteration 36)
