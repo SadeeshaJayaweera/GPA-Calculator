@@ -15,3 +15,4 @@
 - Iteration 14: test: add unit test for gpa sync (iteration 14)
 - Iteration 15: docs: update inline comments (iteration 15)
 - Iteration 16: refactor: extract helper function for auth (iteration 16)
+- Iteration 17: perf: memoize expensive calculations (iteration 17)
