@@ -3,3 +3,4 @@
 - Iteration 2: chore: clean up console logs (iteration 2)
 - Iteration 3: fix: handle edge case in auth listener (iteration 3)
 - Iteration 4: test: add unit test for gpa sync (iteration 4)
+- Iteration 5: docs: update inline comments (iteration 5)
