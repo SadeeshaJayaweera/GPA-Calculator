@@ -6,3 +6,4 @@
 - Iteration 5: docs: update inline comments (iteration 5)
 - Iteration 6: refactor: extract helper function for auth (iteration 6)
 - Iteration 7: perf: memoize expensive calculations (iteration 7)
+- Iteration 8: style: align navbar icons (iteration 8)
