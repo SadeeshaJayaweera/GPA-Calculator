@@ -8,10 +8,14 @@ import {
   Sliders,
   Sun,
   Moon,
-  RotateCcw,
   Download,
   Info,
+  LogOut,
+  User,
+  LogIn,
+  Settings
 } from 'lucide-react';
+import { useAuth } from '../../contexts/AuthContext';
 
 interface NavbarProps {
   activeTab: 'calculator' | 'planner' | 'ai' | 'grading' | 'about';
@@ -21,6 +25,7 @@ interface NavbarProps {
   onLoadSampleData: () => void;
   onResetData: () => void;
   onOpenExport: () => void;
+  onOpenAISettings: () => void;
   selectedUniversityName: string;
 }
 
@@ -32,8 +37,11 @@ export const Navbar: React.FC<NavbarProps> = ({
   onLoadSampleData,
   onResetData,
   onOpenExport,
+  onOpenAISettings,
   selectedUniversityName,
 }) => {
+  const { currentUser, loginWithGoogle, logout } = useAuth();
+
   return (
     <header className="sticky top-0 z-40 w-full border-b border-slate-200/80 bg-white/95 backdrop-blur-md shadow-xs dark:border-purple-900/30 dark:bg-[#090514]/95">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -141,6 +149,44 @@ export const Navbar: React.FC<NavbarProps> = ({
             >
               <RotateCcw className="w-4 h-4" />
             </button>
+
+            {/* Auth Section */}
+            {currentUser ? (
+              <div className="flex items-center gap-2 bg-slate-50 dark:bg-[#130a26]/80 p-1 pr-3 rounded-xl border border-slate-200 dark:border-purple-900/40">
+                <img 
+                  src={currentUser.photoURL || `https://ui-avatars.com/api/?name=${currentUser.displayName}`} 
+                  alt="Profile" 
+                  className="w-7 h-7 rounded-lg object-cover"
+                />
+                <span className="text-xs font-semibold text-slate-700 dark:text-slate-300 hidden md:block max-w-[100px] truncate">
+                  {currentUser.displayName?.split(' ')[0]}
+                </span>
+                <div className="flex items-center gap-0.5 ml-1 border-l border-slate-200 dark:border-purple-900/50 pl-1">
+                  <button 
+                    onClick={onOpenAISettings}
+                    title="AI Advisor Settings"
+                    className="p-1 text-slate-400 hover:text-purple-600 transition-colors"
+                  >
+                    <Settings className="w-3.5 h-3.5" />
+                  </button>
+                  <button 
+                    onClick={logout}
+                    title="Sign Out"
+                    className="p-1 text-slate-400 hover:text-rose-600 transition-colors"
+                  >
+                    <LogOut className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <button
+                onClick={loginWithGoogle}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold text-slate-700 bg-white border border-slate-200 hover:bg-slate-50 hover:border-slate-300 dark:bg-[#130a26] dark:border-purple-900/40 dark:text-slate-200 dark:hover:bg-purple-900/30 transition-colors shadow-2xs"
+              >
+                <img src="https://www.google.com/favicon.ico" alt="Google" className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline">Sign In</span>
+              </button>
+            )}
 
             <button
               onClick={onOpenExport}
