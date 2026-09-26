@@ -137,3 +137,4 @@
 - Iteration 136: refactor: extract helper function for auth (iteration 136)
 - Iteration 137: perf: memoize expensive calculations (iteration 137)
 - Iteration 138: style: align navbar icons (iteration 138)
+- Iteration 139: chore: update linting rules (iteration 139)
