@@ -41,10 +41,11 @@ function computeMathContext(data: AIAdvisorRequest) {
  * or fallback calculation-based advisor if GEMINI_API_KEY is not configured.
  */
 export async function getAcademicAdvice(
-  request: AIAdvisorRequest
+  request: AIAdvisorRequest,
+  userApiKey?: string
 ): Promise<AIAdvisorResponse> {
   const mathContext = computeMathContext(request);
-  const apiKey = process.env.GEMINI_API_KEY;
+  const apiKey = userApiKey || process.env.GEMINI_API_KEY;
 
   // Build key recommendations based on deterministic data
   const recommendations: string[] = [];
