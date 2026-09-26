@@ -10,3 +10,4 @@
 - Iteration 9: chore: update linting rules (iteration 9)
 - Iteration 10: refactor: optimize rendering cycle (iteration 10)
 - Iteration 11: style: update modal padding and margins (iteration 11)
+- Iteration 12: chore: clean up console logs (iteration 12)
