@@ -27,3 +27,4 @@
 - Iteration 26: refactor: extract helper function for auth (iteration 26)
 - Iteration 27: perf: memoize expensive calculations (iteration 27)
 - Iteration 28: style: align navbar icons (iteration 28)
+- Iteration 29: chore: update linting rules (iteration 29)
