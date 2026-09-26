@@ -17,3 +17,4 @@
 - Iteration 16: refactor: extract helper function for auth (iteration 16)
 - Iteration 17: perf: memoize expensive calculations (iteration 17)
 - Iteration 18: style: align navbar icons (iteration 18)
+- Iteration 19: chore: update linting rules (iteration 19)
