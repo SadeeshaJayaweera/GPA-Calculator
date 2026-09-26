@@ -9,3 +9,4 @@
 - Iteration 8: style: align navbar icons (iteration 8)
 - Iteration 9: chore: update linting rules (iteration 9)
 - Iteration 10: refactor: optimize rendering cycle (iteration 10)
+- Iteration 11: style: update modal padding and margins (iteration 11)
