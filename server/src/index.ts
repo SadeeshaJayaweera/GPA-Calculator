@@ -2,9 +2,27 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import path from 'path';
+import * as admin from 'firebase-admin';
 import aiRoutes from './routes/aiRoutes';
 
 dotenv.config();
+
+// Initialize Firebase Admin
+try {
+  if (process.env.FIREBASE_SERVICE_ACCOUNT_KEY) {
+    const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT_KEY);
+    admin.initializeApp({
+      credential: admin.credential.cert(serviceAccount)
+    });
+    console.log('[Firebase Admin] Initialized successfully with provided service account.');
+  } else {
+    // Attempt default initialization (works if ADC is set or in some cloud environments)
+    admin.initializeApp();
+    console.log('[Firebase Admin] Initialized with default credentials.');
+  }
+} catch (error) {
+  console.warn('[Firebase Admin] Failed to initialize:', (error as Error).message);
+}
 
 const app = express();
 const PORT = process.env.PORT || 3001;
