@@ -82,3 +82,23 @@ export const AISettingsModal: React.FC<AISettingsModalProps> = ({ isOpen, onClos
             <div className="relative">
               <Key className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
               <input 
+                type="password"
+                value={apiKey}
+                onChange={(e) => setApiKey(e.target.value)}
+                placeholder="AIzaSy..."
+                className="w-full pl-9 pr-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-purple-500/50 dark:bg-[#1a0f30] dark:border-purple-900/50 dark:text-white dark:focus:ring-purple-500/30 transition-all"
+              />
+            </div>
+            <p className="text-[10px] text-slate-500 dark:text-slate-400 mt-1">
+              You can get a free key from <a href="https://aistudio.google.com/" target="_blank" rel="noreferrer" className="text-purple-600 dark:text-purple-400 hover:underline">Google AI Studio</a>.
+            </p>
+          </div>
+        </div>
+
+        <div className="p-4 sm:p-5 bg-slate-50 dark:bg-[#0c051a] border-t border-slate-100 dark:border-purple-900/30 flex justify-end gap-2">
+          <button
+            onClick={onClose}
+            className="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-200/60 dark:text-slate-300 dark:hover:bg-white/5 transition-colors"
+          >
+            Cancel
+          </button>
