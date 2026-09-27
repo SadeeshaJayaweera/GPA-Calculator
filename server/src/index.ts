@@ -2,7 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import path from 'path';
-import * as admin from 'firebase-admin';
+import admin from 'firebase-admin';
 import aiRoutes from './routes/aiRoutes';
 
 dotenv.config();

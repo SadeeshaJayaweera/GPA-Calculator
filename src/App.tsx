@@ -33,7 +33,7 @@ import {
   calculateTotalCredits,
   calculateTotalWeightedPoints,
   calculateClassification,
-import { calculateClassification } from './lib/gpaCalculator';
+} from './lib/gpaCalculator';
 import { Sparkles, HelpCircle, GraduationCap, Download } from 'lucide-react';
 import { useAuth } from './contexts/AuthContext';
 import { fetchUserData, saveUserData } from './lib/db';

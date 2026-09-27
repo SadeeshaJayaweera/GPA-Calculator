@@ -13,7 +13,8 @@ import {
   LogOut,
   User,
   LogIn,
-  Settings
+  Settings,
+  RotateCcw
 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 
@@ -62,7 +63,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                   Sri Lanka
                 </span>
               </div>
-              <p className="text-xs text-slate-500 dark:text-purple-300/70 hidden sm:block truncate max-w-[260px] md:max-w-none">
+              <p className="text-xs text-slate-500 dark:text-purple-300/70 hidden xl:block truncate">
                 Undergraduate GPA & Academic Planning Platform • {selectedUniversityName}
               </p>
             </div>
@@ -72,29 +73,29 @@ export const Navbar: React.FC<NavbarProps> = ({
           <nav className="hidden lg:flex items-center gap-1 bg-slate-100/90 p-1.5 rounded-2xl border border-slate-200 dark:bg-[#130a26]/80 dark:border-purple-900/40">
             <button
               onClick={() => setActiveTab('calculator')}
-              className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold transition-all ${
+              className={`flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-semibold transition-all whitespace-nowrap ${
                 activeTab === 'calculator'
                   ? 'bg-purple-600 text-white shadow-md shadow-purple-600/30'
                   : 'text-slate-600 hover:text-slate-900 hover:bg-white dark:text-slate-300 dark:hover:text-white dark:hover:bg-purple-900/20'
               }`}
             >
               <Calculator className="w-3.5 h-3.5" />
-              Calculator & Dashboard
+              Calculator
             </button>
             <button
               onClick={() => setActiveTab('planner')}
-              className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold transition-all ${
+              className={`flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-semibold transition-all whitespace-nowrap ${
                 activeTab === 'planner'
                   ? 'bg-purple-600 text-white shadow-md shadow-purple-600/30'
                   : 'text-slate-600 hover:text-slate-900 hover:bg-white dark:text-slate-300 dark:hover:text-white dark:hover:bg-purple-900/20'
               }`}
             >
               <Target className="w-3.5 h-3.5" />
-              Target & Scenarios
+              Planner
             </button>
             <button
               onClick={() => setActiveTab('ai')}
-              className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold transition-all ${
+              className={`flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-semibold transition-all whitespace-nowrap ${
                 activeTab === 'ai'
                   ? 'bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-md shadow-indigo-600/30'
                   : 'text-slate-600 hover:text-slate-900 hover:bg-white dark:text-slate-300 dark:hover:text-white dark:hover:bg-purple-900/20'
@@ -109,25 +110,25 @@ export const Navbar: React.FC<NavbarProps> = ({
             </button>
             <button
               onClick={() => setActiveTab('grading')}
-              className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold transition-all ${
+              className={`flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-semibold transition-all whitespace-nowrap ${
                 activeTab === 'grading'
                   ? 'bg-purple-600 text-white shadow-md shadow-purple-600/30'
                   : 'text-slate-600 hover:text-slate-900 hover:bg-white dark:text-slate-300 dark:hover:text-white dark:hover:bg-purple-900/20'
               }`}
             >
               <Sliders className="w-3.5 h-3.5" />
-              Grading Scales
+              Grading
             </button>
             <button
               onClick={() => setActiveTab('about')}
-              className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold transition-all ${
+              className={`flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-semibold transition-all whitespace-nowrap ${
                 activeTab === 'about'
                   ? 'bg-purple-600 text-white shadow-md shadow-purple-600/30'
                   : 'text-slate-600 hover:text-slate-900 hover:bg-white dark:text-slate-300 dark:hover:text-white dark:hover:bg-purple-900/20'
               }`}
             >
               <Info className="w-3.5 h-3.5" />
-              About & Guide
+              About
             </button>
           </nav>
 
@@ -139,7 +140,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold text-purple-700 bg-purple-50 border border-purple-200 hover:bg-purple-100 hover:text-purple-900 dark:bg-purple-950/60 dark:border-purple-800/40 dark:text-purple-300 dark:hover:bg-purple-900/50 transition-colors shadow-2xs"
             >
               <Sparkles className="w-3.5 h-3.5 text-amber-500" />
-              <span>Sample Data</span>
+              <span className="hidden xl:inline">Sample Data</span>
             </button>
 
             <button
@@ -194,7 +195,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold text-white bg-purple-600 hover:bg-purple-700 transition-all shadow-sm shadow-purple-600/20"
             >
               <Download className="w-3.5 h-3.5" />
-              <span className="hidden md:inline">Export Report</span>
+              <span className="hidden xl:inline">Export Report</span>
             </button>
 
             <button

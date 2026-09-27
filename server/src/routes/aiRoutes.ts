@@ -1,6 +1,6 @@
 import { Router, Request, Response } from 'express';
 import { z } from 'zod';
-import * as admin from 'firebase-admin';
+import admin from 'firebase-admin';
 import { getAcademicAdvice } from '../services/geminiService';
 
 const router = Router();
