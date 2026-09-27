@@ -42,3 +42,23 @@ export const AISettingsModal: React.FC<AISettingsModalProps> = ({ isOpen, onClos
       setStatus('error');
     } finally {
       setIsSaving(false);
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm animate-in fade-in duration-200">
+      <div 
+        className="bg-white dark:bg-[#120826] rounded-2xl shadow-xl w-full max-w-md overflow-hidden border border-slate-200 dark:border-purple-900/40"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="flex items-center justify-between p-4 sm:p-5 border-b border-slate-100 dark:border-purple-900/30">
+          <div className="flex items-center gap-2">
+            <div className="p-2 bg-purple-100 dark:bg-purple-900/50 rounded-lg text-purple-600 dark:text-purple-400">
+              <Bot className="w-5 h-5" />
+            </div>
+            <div>
+              <h3 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white">AI Advisor Settings</h3>
+              <p className="text-[10px] sm:text-xs text-slate-500 dark:text-purple-300/70">Connect your personal Gemini API key</p>
+            </div>
+          </div>
+          <button 
