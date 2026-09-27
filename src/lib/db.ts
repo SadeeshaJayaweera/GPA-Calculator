@@ -18,3 +18,19 @@ export const fetchUserData = async (userId: string): Promise<UserData | null> =>
     }
     return null;
   } catch (error) {
+    console.error("Error fetching user data:", error);
+    return null;
+  }
+};
+
+export const saveUserData = async (userId: string, data: Partial<UserData>): Promise<void> => {
+  try {
+    const docRef = doc(db, 'users', userId);
+    await setDoc(docRef, {
+      ...data,
+      lastUpdated: serverTimestamp()
+    }, { merge: true });
+  } catch (error) {
+    console.error("Error saving user data:", error);
+  }
+};
