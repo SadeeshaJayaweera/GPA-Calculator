@@ -9,6 +9,7 @@ import {
   Loader2,
 } from 'lucide-react';
 import { AIAdvisorRequest, AIAdvisorResponse } from '../../types/academic';
+import { auth } from '../../lib/firebase';
 
 interface MessageItem {
   id: string;
@@ -103,6 +104,22 @@ export const AIAdvisorChat: React.FC<AIAdvisorChatProps> = ({
         semestersSummary,
       };
 
+      let idToken = '';
+      if (auth.currentUser) {
+        try {
+          idToken = await auth.currentUser.getIdToken();
+        } catch (e) {
+          console.warn("Failed to get auth token", e);
+        }
+      }
+
+      const headers: Record<string, string> = {
+        'Content-Type': 'application/json',
+      };
+      
+      if (idToken) {
+        headers['Authorization'] = `Bearer ${idToken}`;
+      }
       const res = await fetch('/api/ai/advisor', {
         method: 'POST',
         headers: {
