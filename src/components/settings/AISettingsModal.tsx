@@ -22,3 +22,23 @@ export const AISettingsModal: React.FC<AISettingsModalProps> = ({ isOpen, onClos
         }
       });
     }
+  }, [isOpen, currentUser]);
+
+  if (!isOpen) return null;
+
+  const handleSave = async () => {
+    if (!currentUser) return;
+    setIsSaving(true);
+    setStatus('idle');
+    try {
+      await saveUserData(currentUser.uid, { geminiApiKey: apiKey.trim() });
+      setStatus('success');
+      setTimeout(() => {
+        onClose();
+        setStatus('idle');
+      }, 1500);
+    } catch (error) {
+      console.error(error);
+      setStatus('error');
+    } finally {
+      setIsSaving(false);
