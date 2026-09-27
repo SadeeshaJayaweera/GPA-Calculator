@@ -62,3 +62,23 @@ export const AISettingsModal: React.FC<AISettingsModalProps> = ({ isOpen, onClos
             </div>
           </div>
           <button 
+            onClick={onClose}
+            className="p-1.5 sm:p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 dark:hover:text-white dark:hover:bg-purple-900/40 rounded-xl transition-colors"
+          >
+            <X className="w-5 h-5" />
+          </button>
+        </div>
+
+        <div className="p-4 sm:p-5 space-y-4">
+          <div className="bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-900/30 p-3 rounded-xl flex gap-3 text-amber-800 dark:text-amber-200/90 text-xs leading-relaxed">
+            <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
+            <p>
+              By adding your own API key, you bypass the global limits and get an uninterrupted AI Advisor experience. Your key is stored securely in your private cloud profile.
+            </p>
+          </div>
+
+          <div className="space-y-1.5">
+            <label className="text-xs font-semibold text-slate-700 dark:text-purple-300">Google Gemini API Key</label>
+            <div className="relative">
+              <Key className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+              <input 
