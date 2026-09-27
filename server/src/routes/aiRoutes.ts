@@ -50,6 +50,24 @@ router.post('/advisor', async (req: Request, res: Response) => {
     const authHeader = req.headers.authorization;
     if (authHeader && authHeader.startsWith('Bearer ')) {
       const idToken = authHeader.split('Bearer ')[1];
+      try {
+        const decodedToken = await admin.auth().verifyIdToken(idToken);
+        const uid = decodedToken.uid;
+        
+        // Fetch user data from Firestore
+        const userDoc = await admin.firestore().collection('users').doc(uid).get();
+        if (userDoc.exists) {
+          const data = userDoc.data();
+          if (data && data.geminiApiKey) {
+            userApiKey = data.geminiApiKey;
+          }
+        }
+      } catch (authError) {
+        console.warn('Failed to verify token or fetch user API key:', authError);
+      }
+    }
+
+    const advice = await getAcademicAdvice(parseResult.data, userApiKey);
     return res.json(advice);
   } catch (error) {
     console.error('AI Advisor endpoint error:', error);
