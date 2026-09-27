@@ -8,7 +8,6 @@ import {
   Sliders,
   Sun,
   Moon,
-  RotateCcw,
   Download,
   Info,
 } from 'lucide-react';
