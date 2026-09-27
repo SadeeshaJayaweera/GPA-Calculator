@@ -120,11 +120,10 @@ export const AIAdvisorChat: React.FC<AIAdvisorChatProps> = ({
       if (idToken) {
         headers['Authorization'] = `Bearer ${idToken}`;
       }
+
       const res = await fetch('/api/ai/advisor', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers,
         body: JSON.stringify(payload),
       });
 
