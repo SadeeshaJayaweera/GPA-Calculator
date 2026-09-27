@@ -126,15 +126,21 @@ export const App: React.FC = () => {
     localStorage.setItem('gpa_grading_scale_id', currentGradingScale.id);
     if (currentUser) {
       saveUserData(currentUser.uid, { gradingScaleId: currentGradingScale.id });
+    }
+  }, [currentGradingScale, currentUser]);
 
   useEffect(() => {
     localStorage.setItem('gpa_classification_rules', JSON.stringify(classificationRules));
-  }, [classificationRules]);
+    if (currentUser) {
+      saveUserData(currentUser.uid, { classificationRules });
+    }
+  }, [classificationRules, currentUser]);
 
   // Modals state
   const [isHowItCalculatedOpen, setIsHowItCalculatedOpen] = useState(false);
   const [isGradingModalOpen, setIsGradingModalOpen] = useState(false);
   const [isExportModalOpen, setIsExportModalOpen] = useState(false);
+  const [isAISettingsOpen, setIsAISettingsOpen] = useState(false);
 
   // Deterministic calculations
   const cgpa = calculateCGPA(semesters, currentGradingScale);
@@ -299,6 +305,7 @@ export const App: React.FC = () => {
         onLoadSampleData={handleLoadSampleData}
         onResetData={handleResetData}
         onOpenExport={() => setIsExportModalOpen(true)}
+        onOpenAISettings={() => setIsAISettingsOpen(true)}
         selectedUniversityName={currentGradingScale.university}
       />
 
@@ -519,6 +526,11 @@ export const App: React.FC = () => {
         classificationRules={classificationRules}
         onUpdateClassificationRule={handleUpdateClassificationRule}
         onResetClassificationRules={handleResetClassificationRules}
+      />
+
+      <AISettingsModal 
+        isOpen={isAISettingsOpen}
+        onClose={() => setIsAISettingsOpen(false)}
       />
 
       <ExportReportModal

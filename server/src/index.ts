@@ -2,10 +2,16 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import path from 'path';
+import * as admin from 'firebase-admin';
 import aiRoutes from './routes/aiRoutes';
 
 dotenv.config();
 
+// Initialize Firebase Admin
+try {
+  if (process.env.FIREBASE_SERVICE_ACCOUNT_KEY) {
+    const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT_KEY);
+    admin.initializeApp({
 const app = express();
 const PORT = process.env.PORT || 3001;
 
