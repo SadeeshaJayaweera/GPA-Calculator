@@ -104,12 +104,28 @@ export const App: React.FC = () => {
       fetchUserData(currentUser.uid).then((data) => {
         if (data) {
           if (data.semesters && data.semesters.length > 0) setSemesters(data.semesters);
+          if (data.classificationRules) setClassificationRules(data.classificationRules);
+          if (data.gradingScaleId) {
+            const found = AVAILABLE_GRADING_SCALES.find((s) => s.id === data.gradingScaleId);
+            if (found) setCurrentGradingScale(found);
+          }
+        }
+      });
+    }
+  }, [currentUser]);
+
+  // Persist changes to LocalStorage & Firestore
+  useEffect(() => {
     localStorage.setItem('gpa_semesters_data', JSON.stringify(semesters));
-  }, [semesters]);
+    if (currentUser) {
+      saveUserData(currentUser.uid, { semesters });
+    }
+  }, [semesters, currentUser]);
 
   useEffect(() => {
     localStorage.setItem('gpa_grading_scale_id', currentGradingScale.id);
-  }, [currentGradingScale]);
+    if (currentUser) {
+      saveUserData(currentUser.uid, { gradingScaleId: currentGradingScale.id });
 
   useEffect(() => {
     localStorage.setItem('gpa_classification_rules', JSON.stringify(classificationRules));
