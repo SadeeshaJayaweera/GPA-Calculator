@@ -10,7 +10,12 @@ import {
   Moon,
   Download,
   Info,
+  LogOut,
+  User,
+  LogIn,
+  Settings
 } from 'lucide-react';
+import { useAuth } from '../../contexts/AuthContext';
 
 interface NavbarProps {
   activeTab: 'calculator' | 'planner' | 'ai' | 'grading' | 'about';
@@ -20,6 +25,7 @@ interface NavbarProps {
   onLoadSampleData: () => void;
   onResetData: () => void;
   onOpenExport: () => void;
+  onOpenAISettings: () => void;
   selectedUniversityName: string;
 }
 
@@ -31,8 +37,11 @@ export const Navbar: React.FC<NavbarProps> = ({
   onLoadSampleData,
   onResetData,
   onOpenExport,
+  onOpenAISettings,
   selectedUniversityName,
 }) => {
+  const { currentUser, loginWithGoogle, logout } = useAuth();
+
   return (
     <header className="sticky top-0 z-40 w-full border-b border-slate-200/80 bg-white/95 backdrop-blur-md shadow-xs dark:border-purple-900/30 dark:bg-[#090514]/95">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -141,6 +150,17 @@ export const Navbar: React.FC<NavbarProps> = ({
               <RotateCcw className="w-4 h-4" />
             </button>
 
+            {/* Auth Section */}
+            {currentUser ? (
+              <div className="flex items-center gap-2 bg-slate-50 dark:bg-[#130a26]/80 p-1 pr-3 rounded-xl border border-slate-200 dark:border-purple-900/40">
+                <img 
+                  src={currentUser.photoURL || `https://ui-avatars.com/api/?name=${currentUser.displayName}`} 
+                  alt="Profile" 
+                  className="w-7 h-7 rounded-lg object-cover"
+                />
+                <span className="text-xs font-semibold text-slate-700 dark:text-slate-300 hidden md:block max-w-[100px] truncate">
+                  {currentUser.displayName?.split(' ')[0]}
+                </span>
             <button
               onClick={onOpenExport}
               title="Export GPA Report & Summary"
