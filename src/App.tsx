@@ -12,6 +12,7 @@ import { ScenarioSandbox } from './components/planner/ScenarioSandbox';
 import { AIAdvisorChat } from './components/ai/AIAdvisorChat';
 import { AcademicCharts } from './components/charts/AcademicCharts';
 import { GradingSettingsModal } from './components/settings/GradingSettingsModal';
+import { AISettingsModal } from './components/settings/AISettingsModal';
 import { ExportReportModal } from './components/export/ExportReportModal';
 import { AboutSection } from './components/about/AboutSection';
 import {
@@ -32,10 +33,14 @@ import {
   calculateTotalCredits,
   calculateTotalWeightedPoints,
   calculateClassification,
-} from './lib/gpaCalculator';
+import { calculateClassification } from './lib/gpaCalculator';
 import { Sparkles, HelpCircle, GraduationCap, Download } from 'lucide-react';
+import { useAuth } from './contexts/AuthContext';
+import { fetchUserData, saveUserData } from './lib/db';
 
 export const App: React.FC = () => {
+  const { currentUser } = useAuth();
+  
   // Navigation tab
   const [activeTab, setActiveTab] = useState<'calculator' | 'planner' | 'ai' | 'grading' | 'about'>('calculator');
 
@@ -93,8 +98,12 @@ export const App: React.FC = () => {
 
   const [activeSemesterId, setActiveSemesterId] = useState<string | 'all'>('all');
 
-  // Persist changes
+  // Sync with Firestore when User Logs In
   useEffect(() => {
+    if (currentUser) {
+      fetchUserData(currentUser.uid).then((data) => {
+        if (data) {
+          if (data.semesters && data.semesters.length > 0) setSemesters(data.semesters);
     localStorage.setItem('gpa_semesters_data', JSON.stringify(semesters));
   }, [semesters]);
 

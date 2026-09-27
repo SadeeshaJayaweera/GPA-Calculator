@@ -181,6 +181,13 @@ export const Navbar: React.FC<NavbarProps> = ({
             ) : (
               <button
                 onClick={loginWithGoogle}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold text-slate-700 bg-white border border-slate-200 hover:bg-slate-50 hover:border-slate-300 dark:bg-[#130a26] dark:border-purple-900/40 dark:text-slate-200 dark:hover:bg-purple-900/30 transition-colors shadow-2xs"
+              >
+                <img src="https://www.google.com/favicon.ico" alt="Google" className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline">Sign In</span>
+              </button>
+            )}
+
             <button
               onClick={onOpenExport}
               title="Export GPA Report & Summary"
