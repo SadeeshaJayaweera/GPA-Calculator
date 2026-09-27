@@ -161,6 +161,26 @@ export const Navbar: React.FC<NavbarProps> = ({
                 <span className="text-xs font-semibold text-slate-700 dark:text-slate-300 hidden md:block max-w-[100px] truncate">
                   {currentUser.displayName?.split(' ')[0]}
                 </span>
+                <div className="flex items-center gap-0.5 ml-1 border-l border-slate-200 dark:border-purple-900/50 pl-1">
+                  <button 
+                    onClick={onOpenAISettings}
+                    title="AI Advisor Settings"
+                    className="p-1 text-slate-400 hover:text-purple-600 transition-colors"
+                  >
+                    <Settings className="w-3.5 h-3.5" />
+                  </button>
+                  <button 
+                    onClick={logout}
+                    title="Sign Out"
+                    className="p-1 text-slate-400 hover:text-rose-600 transition-colors"
+                  >
+                    <LogOut className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <button
+                onClick={loginWithGoogle}
             <button
               onClick={onOpenExport}
               title="Export GPA Report & Summary"
