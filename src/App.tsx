@@ -41,7 +41,7 @@ import { getMuiTheme } from './theme/muiTheme';
 
 export const App: React.FC = () => {
   const { currentUser } = useAuth();
-  
+
   // Navigation tab
   const [activeTab, setActiveTab] = useState<'calculator' | 'planner' | 'ai' | 'grading' | 'about'>('calculator');
 
@@ -307,259 +307,259 @@ export const App: React.FC = () => {
   return (
     <ThemeProvider theme={getMuiTheme(isDarkMode)}>
       <div className="min-h-screen flex flex-col bg-[#f8fafc] text-slate-900 selection:bg-purple-600 selection:text-white dark:bg-[#090514] dark:text-slate-100 transition-colors duration-200">
-      {/* Navbar */}
-      <Navbar
-        activeTab={activeTab}
-        setActiveTab={setActiveTab}
-        isDarkMode={isDarkMode}
-        setIsDarkMode={setIsDarkMode}
-        onResetData={handleResetData}
-        onOpenExport={() => setIsExportModalOpen(true)}
-        onOpenAISettings={() => setIsAISettingsOpen(true)}
-      />
+        {/* Navbar */}
+        <Navbar
+          activeTab={activeTab}
+          setActiveTab={setActiveTab}
+          isDarkMode={isDarkMode}
+          setIsDarkMode={setIsDarkMode}
+          onResetData={handleResetData}
+          onOpenExport={() => setIsExportModalOpen(true)}
+          onOpenAISettings={() => setIsAISettingsOpen(true)}
+        />
 
-      {/* Main Container */}
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 pt-6 sm:pt-8 pb-16">
-        {/* Academic Platform Hero Banner */}
-        <div className="mb-6 sm:mb-8 text-center sm:text-left flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-slate-200/80 pb-6 dark:border-purple-900/30">
-          <div>
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-50 border border-purple-200 text-[11px] font-semibold text-purple-700 dark:bg-purple-950/60 dark:border-purple-800/40 dark:text-purple-300 mb-2.5 shadow-2xs">
-              <GraduationCap className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400" />
-              <span>Sri Lankan Undergraduate Academic Platform</span>
+        {/* Main Container */}
+        <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 pt-6 sm:pt-8 pb-16">
+          {/* Academic Platform Hero Banner */}
+          <div className="mb-6 sm:mb-8 text-center sm:text-left flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-slate-200/80 pb-6 dark:border-purple-900/30">
+            <div>
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-50 border border-purple-200 text-[11px] font-semibold text-purple-700 dark:bg-purple-950/60 dark:border-purple-800/40 dark:text-purple-300 mb-2.5 shadow-2xs">
+                <GraduationCap className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400" />
+                <span>Sri Lankan Undergraduate Academic Platform</span>
+              </div>
+              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black tracking-tight text-slate-900 dark:text-white">
+                Calculate Your GPA. <span className="bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-800 bg-clip-text text-transparent dark:from-purple-400 dark:via-purple-300 dark:to-indigo-300">Plan Your Future.</span>
+              </h1>
+              <p className="text-xs sm:text-sm text-slate-600 dark:text-purple-200/70 mt-1.5 max-w-2xl leading-relaxed">
+                Designed with human-centered ergonomics for Sri Lankan university undergraduates across state universities and private institutes (SLIIT, NSBM, IIT, Colombo, Moratuwa, USJ, Kelaniya, Peradeniya).
+              </p>
             </div>
-            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black tracking-tight text-slate-900 dark:text-white">
-              Calculate Your GPA. <span className="bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-800 bg-clip-text text-transparent dark:from-purple-400 dark:via-purple-300 dark:to-indigo-300">Plan Your Future.</span>
-            </h1>
-            <p className="text-xs sm:text-sm text-slate-600 dark:text-purple-200/70 mt-1.5 max-w-2xl leading-relaxed">
-              Designed with human-centered ergonomics for Sri Lankan university undergraduates across state universities and private institutes (SLIIT, NSBM, IIT, Colombo, Moratuwa, USJ, Kelaniya, Peradeniya).
-            </p>
+
+            <div className="flex items-center justify-center sm:justify-end gap-2.5">
+              <button
+                onClick={() => setIsHowItCalculatedOpen(true)}
+                className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold text-slate-700 bg-white border border-slate-200 hover:bg-slate-50 hover:text-purple-700 hover:border-purple-300 shadow-xs transition-all dark:bg-[#160b30] dark:border-purple-800/40 dark:text-purple-300 dark:hover:bg-purple-900/40 dark:hover:text-white"
+              >
+                <HelpCircle className="w-4 h-4 text-purple-600 dark:text-purple-400" />
+                <span>How GPA is Calculated</span>
+              </button>
+              <button
+                onClick={() => setActiveTab('planner')}
+                className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold text-white bg-purple-600 hover:bg-purple-500 shadow-md shadow-purple-600/30 transition-all hover:scale-[1.02]"
+              >
+                <Sparkles className="w-4 h-4 text-yellow-300" />
+                <span>Target & Scenarios</span>
+              </button>
+            </div>
           </div>
 
-          <div className="flex items-center justify-center sm:justify-end gap-2.5">
-            <button
-              onClick={() => setIsHowItCalculatedOpen(true)}
-              className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold text-slate-700 bg-white border border-slate-200 hover:bg-slate-50 hover:text-purple-700 hover:border-purple-300 shadow-xs transition-all dark:bg-[#160b30] dark:border-purple-800/40 dark:text-purple-300 dark:hover:bg-purple-900/40 dark:hover:text-white"
-            >
-              <HelpCircle className="w-4 h-4 text-purple-600 dark:text-purple-400" />
-              <span>How GPA is Calculated</span>
-            </button>
-            <button
-              onClick={() => setActiveTab('planner')}
-              className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold text-white bg-purple-600 hover:bg-purple-500 shadow-md shadow-purple-600/30 transition-all hover:scale-[1.02]"
-            >
-              <Sparkles className="w-4 h-4 text-yellow-300" />
-              <span>Target & Scenarios</span>
-            </button>
-          </div>
-        </div>
+          {/* Real-time Summary Cards & Progress (Always prominent across core workflow) */}
+          <GPASummaryCards
+            cgpa={cgpa}
+            semesterGPA={activeSemesterGPA}
+            isSemesterMode={activeSemesterId !== 'all'}
+            activeSemesterName={activeSemester?.name}
+            totalCredits={totalCredits}
+            completedSubjects={completedSubjects}
+            totalWeightedPoints={totalWeightedPoints}
+            classification={classification}
+            onOpenHowItCalculated={() => setIsHowItCalculatedOpen(true)}
+          />
 
-        {/* Real-time Summary Cards & Progress (Always prominent across core workflow) */}
-        <GPASummaryCards
-          cgpa={cgpa}
-          semesterGPA={activeSemesterGPA}
-          isSemesterMode={activeSemesterId !== 'all'}
-          activeSemesterName={activeSemester?.name}
-          totalCredits={totalCredits}
-          completedSubjects={completedSubjects}
-          totalWeightedPoints={totalWeightedPoints}
-          classification={classification}
-          onOpenHowItCalculated={() => setIsHowItCalculatedOpen(true)}
-        />
+          <DegreeProgressBar
+            cgpa={cgpa}
+            classificationRules={classificationRules}
+          />
 
-        <DegreeProgressBar
-          cgpa={cgpa}
-          classificationRules={classificationRules}
-        />
+          {/* Tab 1: Calculator & Dashboard */}
+          {activeTab === 'calculator' && (
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8">
+              {/* Left Main Calculator (Col 8) */}
+              <div className="lg:col-span-8 space-y-6">
+                {/* Semester Mode Switcher */}
+                <SemesterManager
+                  semesters={semesters}
+                  activeSemesterId={activeSemesterId}
+                  setActiveSemesterId={setActiveSemesterId}
+                  gradingScale={currentGradingScale}
+                  onAddSemester={handleAddSemester}
+                  onRemoveSemester={handleRemoveSemester}
+                  onRenameSemester={handleRenameSemester}
+                />
 
-        {/* Tab 1: Calculator & Dashboard */}
-        {activeTab === 'calculator' && (
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8">
-            {/* Left Main Calculator (Col 8) */}
-            <div className="lg:col-span-8 space-y-6">
-              {/* Semester Mode Switcher */}
-              <SemesterManager
-                semesters={semesters}
-                activeSemesterId={activeSemesterId}
-                setActiveSemesterId={setActiveSemesterId}
-                gradingScale={currentGradingScale}
-                onAddSemester={handleAddSemester}
-                onRemoveSemester={handleRemoveSemester}
-                onRenameSemester={handleRenameSemester}
-              />
+                {/* Subject Entries Table */}
+                <SubjectTable
+                  subjects={currentDisplayedSubjects}
+                  gradingScale={currentGradingScale}
+                  onAddSubject={handleAddSubject}
+                  onUpdateSubject={handleUpdateSubject}
+                  onRemoveSubject={handleRemoveSubject}
+                />
 
-              {/* Subject Entries Table */}
-              <SubjectTable
-                subjects={currentDisplayedSubjects}
-                gradingScale={currentGradingScale}
-                onAddSubject={handleAddSubject}
-                onUpdateSubject={handleUpdateSubject}
-                onRemoveSubject={handleRemoveSubject}
-              />
+                {/* Charts & Analytics */}
+                <AcademicCharts
+                  semesters={semesters}
+                  gradingScale={currentGradingScale}
+                  completedCredits={totalCredits}
+                  remainingCredits={Math.max(120 - totalCredits, 0)}
+                />
 
-              {/* Charts & Analytics */}
-              <AcademicCharts
-                semesters={semesters}
-                gradingScale={currentGradingScale}
-                completedCredits={totalCredits}
-                remainingCredits={Math.max(120 - totalCredits, 0)}
-              />
+                {/* Download Feature */}
+                {semesters.some(s => s.subjects.length > 0) && (
+                  <div className="flex justify-center pt-8 pb-4">
+                    <button
+                      onClick={() => setIsExportModalOpen(true)}
+                      className="flex items-center gap-2 px-6 py-3.5 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-bold shadow-lg shadow-purple-600/20 transition-all hover:scale-[1.02] active:scale-[0.98]"
+                    >
+                      <Download className="w-5 h-5" />
+                      <span>Download Final Academic Report (PDF)</span>
+                    </button>
+                  </div>
+                )}
+              </div>
 
-              {/* Download Feature */}
-              {semesters.some(s => s.subjects.length > 0) && (
-                <div className="flex justify-center pt-8 pb-4">
+              {/* Right Sidebar (Col 4) */}
+              <div className="lg:col-span-4 space-y-6">
+                <GradingScaleSidebar
+                  currentGradingScale={currentGradingScale}
+                  onSelectGradingScale={setCurrentGradingScale}
+                  classificationRules={classificationRules}
+                  onOpenGradingModal={() => setIsGradingModalOpen(true)}
+                />
+
+                {/* Quick Target Insight */}
+                <div className="rounded-2xl bg-gradient-to-br from-[#170c30] to-[#100720] border border-purple-800/40 p-5 shadow-xl light:bg-slate-100 light:border-slate-200">
+                  <h4 className="text-xs font-bold uppercase tracking-wider text-purple-300 light:text-purple-700 mb-2">
+                    Academic Degree Goal
+                  </h4>
+                  <p className="text-xs text-slate-300 light:text-slate-600 mb-3">
+                    Want to know exactly what future grades you need to graduate with First Class honours?
+                  </p>
                   <button
-                    onClick={() => setIsExportModalOpen(true)}
-                    className="flex items-center gap-2 px-6 py-3.5 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-bold shadow-lg shadow-purple-600/20 transition-all hover:scale-[1.02] active:scale-[0.98]"
+                    onClick={() => setActiveTab('planner')}
+                    className="w-full py-2.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white text-xs font-bold shadow-md transition-colors"
                   >
-                    <Download className="w-5 h-5" />
-                    <span>Download Final Academic Report (PDF)</span>
+                    Open Academic Target Planner →
                   </button>
                 </div>
-              )}
+              </div>
             </div>
+          )}
 
-            {/* Right Sidebar (Col 4) */}
-            <div className="lg:col-span-4 space-y-6">
+          {/* Tab 2: Academic Planner & Scenarios */}
+          {activeTab === 'planner' && (
+            <div className="space-y-8 animate-fadeIn">
+              <TargetGPACalculator
+                currentCGPA={cgpa}
+                completedCredits={totalCredits}
+              />
+
+              <ScenarioSandbox
+                currentWeightedPoints={totalWeightedPoints}
+                currentCredits={totalCredits}
+                currentCGPA={cgpa}
+                gradingScale={currentGradingScale}
+                classificationRules={classificationRules}
+              />
+            </div>
+          )}
+
+          {/* Tab 3: Gemini AI Academic Advisor */}
+          {activeTab === 'ai' && (
+            <div className="max-w-4xl mx-auto animate-fadeIn">
+              <AIAdvisorChat
+                currentCGPA={cgpa}
+                completedCredits={totalCredits}
+                remainingCredits={Math.max(120 - totalCredits, 30)}
+                targetCGPA={3.70}
+                universityName={currentGradingScale.university}
+                degreeName="Undergraduate Degree Program"
+                semestersSummary={semestersSummary}
+                onOpenSettings={() => setIsAISettingsOpen(true)}
+              />
+            </div>
+          )}
+
+          {/* Tab 4: Grading Scales & Settings */}
+          {activeTab === 'grading' && (
+            <div className="max-w-4xl mx-auto space-y-6 animate-fadeIn">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h2 className="text-xl font-bold text-white light:text-slate-900">
+                    Sri Lankan University Grading Scales & Classification Presets
+                  </h2>
+                  <p className="text-xs text-purple-300/80 light:text-slate-600">
+                    Switch universities or customize honour thresholds
+                  </p>
+                </div>
+                <button
+                  onClick={() => setIsGradingModalOpen(true)}
+                  className="px-4 py-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-white text-xs font-semibold shadow-md transition-colors"
+                >
+                  Customize Cutoffs
+                </button>
+              </div>
+
               <GradingScaleSidebar
                 currentGradingScale={currentGradingScale}
                 onSelectGradingScale={setCurrentGradingScale}
                 classificationRules={classificationRules}
                 onOpenGradingModal={() => setIsGradingModalOpen(true)}
               />
-
-              {/* Quick Target Insight */}
-              <div className="rounded-2xl bg-gradient-to-br from-[#170c30] to-[#100720] border border-purple-800/40 p-5 shadow-xl light:bg-slate-100 light:border-slate-200">
-                <h4 className="text-xs font-bold uppercase tracking-wider text-purple-300 light:text-purple-700 mb-2">
-                  Academic Degree Goal
-                </h4>
-                <p className="text-xs text-slate-300 light:text-slate-600 mb-3">
-                  Want to know exactly what future grades you need to graduate with First Class honours?
-                </p>
-                <button
-                  onClick={() => setActiveTab('planner')}
-                  className="w-full py-2.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white text-xs font-bold shadow-md transition-colors"
-                >
-                  Open Academic Target Planner →
-                </button>
-              </div>
             </div>
-          </div>
-        )}
+          )}
 
-        {/* Tab 2: Academic Planner & Scenarios */}
-        {activeTab === 'planner' && (
-          <div className="space-y-8 animate-fadeIn">
-            <TargetGPACalculator
-              currentCGPA={cgpa}
-              completedCredits={totalCredits}
+          {/* Tab 5: About & Guide */}
+          {activeTab === 'about' && (
+            <AboutSection
+              onOpenHowItCalculated={() => setIsHowItCalculatedOpen(true)}
+              onSelectTab={setActiveTab}
             />
+          )}
+        </main>
 
-            <ScenarioSandbox
-              currentWeightedPoints={totalWeightedPoints}
-              currentCredits={totalCredits}
-              currentCGPA={cgpa}
-              gradingScale={currentGradingScale}
-              classificationRules={classificationRules}
-            />
-          </div>
-        )}
+        {/* Modals */}
+        <HowItCalculatedModal
+          isOpen={isHowItCalculatedOpen}
+          onClose={() => setIsHowItCalculatedOpen(false)}
+          totalCredits={totalCredits}
+          totalWeightedPoints={totalWeightedPoints}
+          cgpa={cgpa}
+        />
 
-        {/* Tab 3: Gemini AI Academic Advisor */}
-        {activeTab === 'ai' && (
-          <div className="max-w-4xl mx-auto animate-fadeIn">
-            <AIAdvisorChat
-              currentCGPA={cgpa}
-              completedCredits={totalCredits}
-              remainingCredits={Math.max(120 - totalCredits, 30)}
-              targetCGPA={3.70}
-              universityName={currentGradingScale.university}
-              degreeName="Undergraduate Degree Program"
-              semestersSummary={semestersSummary}
-              onOpenSettings={() => setIsAISettingsOpen(true)}
-            />
-          </div>
-        )}
+        <GradingSettingsModal
+          isOpen={isGradingModalOpen}
+          onClose={() => setIsGradingModalOpen(false)}
+          currentGradingScale={currentGradingScale}
+          onSelectGradingScale={setCurrentGradingScale}
+          classificationRules={classificationRules}
+          onUpdateClassificationRule={handleUpdateClassificationRule}
+          onResetClassificationRules={handleResetClassificationRules}
+        />
 
-        {/* Tab 4: Grading Scales & Settings */}
-        {activeTab === 'grading' && (
-          <div className="max-w-4xl mx-auto space-y-6 animate-fadeIn">
-            <div className="flex items-center justify-between">
-              <div>
-                <h2 className="text-xl font-bold text-white light:text-slate-900">
-                  Sri Lankan University Grading Scales & Classification Presets
-                </h2>
-                <p className="text-xs text-purple-300/80 light:text-slate-600">
-                  Switch universities or customize honour thresholds
-                </p>
-              </div>
-              <button
-                onClick={() => setIsGradingModalOpen(true)}
-                className="px-4 py-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-white text-xs font-semibold shadow-md transition-colors"
-              >
-                Customize Cutoffs
-              </button>
-            </div>
+        <AISettingsModal
+          isOpen={isAISettingsOpen}
+          onClose={() => setIsAISettingsOpen(false)}
+        />
 
-            <GradingScaleSidebar
-              currentGradingScale={currentGradingScale}
-              onSelectGradingScale={setCurrentGradingScale}
-              classificationRules={classificationRules}
-              onOpenGradingModal={() => setIsGradingModalOpen(true)}
-            />
-          </div>
-        )}
+        <ExportReportModal
+          isOpen={isExportModalOpen}
+          onClose={() => setIsExportModalOpen(false)}
+          semesters={semesters}
+          gradingScale={currentGradingScale}
+          cgpa={cgpa}
+          totalCredits={totalCredits}
+          totalWeightedPoints={totalWeightedPoints}
+          classification={classification}
+          universityName={currentGradingScale.university}
+        />
 
-        {/* Tab 5: About & Guide */}
-        {activeTab === 'about' && (
-          <AboutSection
-            onOpenHowItCalculated={() => setIsHowItCalculatedOpen(true)}
-            onSelectTab={setActiveTab}
-          />
-        )}
-      </main>
-
-      {/* Modals */}
-      <HowItCalculatedModal
-        isOpen={isHowItCalculatedOpen}
-        onClose={() => setIsHowItCalculatedOpen(false)}
-        totalCredits={totalCredits}
-        totalWeightedPoints={totalWeightedPoints}
-        cgpa={cgpa}
-      />
-
-      <GradingSettingsModal
-        isOpen={isGradingModalOpen}
-        onClose={() => setIsGradingModalOpen(false)}
-        currentGradingScale={currentGradingScale}
-        onSelectGradingScale={setCurrentGradingScale}
-        classificationRules={classificationRules}
-        onUpdateClassificationRule={handleUpdateClassificationRule}
-        onResetClassificationRules={handleResetClassificationRules}
-      />
-
-      <AISettingsModal 
-        isOpen={isAISettingsOpen}
-        onClose={() => setIsAISettingsOpen(false)}
-      />
-
-      <ExportReportModal
-        isOpen={isExportModalOpen}
-        onClose={() => setIsExportModalOpen(false)}
-        semesters={semesters}
-        gradingScale={currentGradingScale}
-        cgpa={cgpa}
-        totalCredits={totalCredits}
-        totalWeightedPoints={totalWeightedPoints}
-        classification={classification}
-        universityName={currentGradingScale.university}
-      />
-
-      {/* Footer with Developer Attribution */}
-      <Footer
-        onOpenHowItCalculated={() => setIsHowItCalculatedOpen(true)}
-        onOpenAbout={() => setActiveTab('about')}
-      />
-    </div>
+        {/* Footer with Developer Attribution */}
+        <Footer
+          onOpenHowItCalculated={() => setIsHowItCalculatedOpen(true)}
+          onOpenAbout={() => setActiveTab('about')}
+        />
+      </div>
     </ThemeProvider>
   );
 };

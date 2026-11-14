@@ -3,7 +3,10 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-purple.svg)](https://opensource.org/licenses/MIT)
 [![TypeScript](https://img.shields.io/badge/TypeScript-Strict-blue.svg)](https://www.typescriptlang.org/)
 [![React](https://img.shields.io/badge/React-19-cyan.svg)](https://react.dev/)
+[![Material UI](https://img.shields.io/badge/MUI-v6-007FFF.svg)](https://mui.com/)
 [![TailwindCSS](https://img.shields.io/badge/TailwindCSS-v4-38bdf8.svg)](https://tailwindcss.com/)
+[![Firebase](https://img.shields.io/badge/Firebase-Auth%20%26%20Firestore-orange.svg)](https://firebase.google.com/)
+[![Google Gemini](https://img.shields.io/badge/AI-Google%20Gemini-8E75C4.svg)](https://aistudio.google.com/)
 [![Tests](https://img.shields.io/badge/Vitest-14%20Passed-emerald.svg)](https://vitest.dev/)
 
 A modern, production-grade **GPA + CGPA + Degree Class Prediction + Academic Planning platform** built specifically for **Sri Lankan university undergraduates** across state and private universities (SLIIT, NSBM, IIT, University of Colombo, University of Moratuwa, USJ, University of Kelaniya, University of Peradeniya, and all UGC degree programs).
@@ -15,18 +18,18 @@ A modern, production-grade **GPA + CGPA + Degree Class Prediction + Academic Pla
 
 ## 📸 Application Screenshots
 
-### 1. Dashboard & Cumulative GPA Calculator (Clean White HCI Theme)
-*Ergonomic, distraction-free interface with real-time degree classification progress bar, credit summary metrics, semester tabs, and live grade-point calculations.*
+### 1. Dashboard & Cumulative GPA Calculator (Clean Light Mode)
+*Ergonomic, distraction-free interface featuring a Material UI v6 App Bar, real-time degree classification progress bar, credit summary metrics, multi-semester management, and live credit-weighted grade-point calculations.*
 
 ![GPA Mate LK Dashboard Light Mode](docs/screenshots/dashboard-light.png)
 
 ### 2. Academic Target & "What-If" Scenario Sandbox
-*Determine exact required future GPA to reach target degree classes (First Class, 2:1, 2:2) alongside interactive future module simulations with customizable credit weighting.*
+*Determine the exact required future GPA to reach target degree classes (First Class, 2:1, 2:2) alongside interactive future module simulations with customizable credit weighting.*
 
 ![Target and Scenario Planner](docs/screenshots/planner.png)
 
-### 3. Google Gemini AI Academic Advisor
-*Intelligent conversational assistant powered by Google Gemini, grounded with verified deterministic mathematical calculations for strategic academic planning and study guidance.*
+### 3. Google Gemini AI Academic Advisor (Grounded with Ground Truth)
+*Intelligent conversational assistant powered by Google Gemini, personally greeting students by their Google account profile, automatically calculating remaining credit feasibility, and enforcing zero mathematical hallucinations.*
 
 ![Google Gemini AI Academic Advisor](docs/screenshots/ai-advisor.png)
 
@@ -34,6 +37,12 @@ A modern, production-grade **GPA + CGPA + Degree Class Prediction + Academic Pla
 *Pre-configured grading systems for Sri Lankan UGC standard and top state/private universities (SLIIT, NSBM, IIT, Colombo, Moratuwa, USJ, Kelaniya, Peradeniya).*
 
 ![University Grading Scales](docs/screenshots/grading-scales.png)
+
+### 5. High-Contrast Dark Mode
+*Engineered for night study sessions, featuring deep contrast palettes, fluid card elevation, and seamless theme synchronization.*
+
+![GPA Mate LK Dashboard Dark Mode](docs/screenshots/dashboard-dark.png)
+
 ---
 
 ## 🌟 Key Features
@@ -56,20 +65,21 @@ A modern, production-grade **GPA + CGPA + Degree Class Prediction + Academic Pla
 - **Maximum Possible CGPA**: Deterministically computes the mathematical ceiling (assuming 4.0 in all future modules).
 - **Impossible Target Detection**: Flags mathematically unattainable targets and provides constructive academic advice (e.g. retake policies).
 
-### 4. Interactive "What-If" Grade Simulator & Intelligent Combination Recipes
-- **Upcoming Module Sandbox**: Add future modules (such as 6-credit Final Year Projects) and adjust expected grades to immediately observe projected CGPA changes.
-- **Feasible Grade Combinations**: Generates feasible grade distributions (Balanced, High Performance, All-Round Excellence) ranked by academic effort.
+### 4. Google Authentication & Persistent Student Sessions
+- **Real Google Sign-In**: Powered by Firebase Auth (`signInWithPopup`), allowing students to log in with their actual Google accounts.
+- **Session Persistence**: Sessions are saved securely across browser closures and system restarts via `localStorage` and Firebase auth state.
+- **User-Scoped Academic Data Sync**: Offline-first caching (`gpa_user_data_${userId}`) combined with Firestore synchronization ensures that your semesters, modules, and target CGPAs are safely saved to your personal account.
+- **Seamless Gemini AI Linking**: Logging in with Google immediately switches on the Gemini AI Advisor with personalized student context.
 
 ### 5. Google Gemini AI Academic Advisor (Secure Server Architecture)
 - **Zero Mathematical Hallucination**: AI is provided with verified mathematical ground truth calculated by the backend before prompting.
-- **Secure Backend API**: `GEMINI_API_KEY` is kept strictly on the Node.js server in `.env` — never exposed in frontend bundles or client storage.
+- **Student Personalization**: Greets students warmly by their Google account name and provides guidance customized to their enrolled university and degree.
+- **Multi-Tier Resilience**: Robust client caller (`src/lib/geminiClient.ts`) that falls back gracefully across Vite proxy, direct backend socket, browser direct API, and deterministic offline heuristics.
 - **Sri Lankan Academic Context**: Pre-trained system prompt provides strategic advice on continuous assessment (CA), high-credit module leverage, and peer revision circles.
-- **Offline / Zero-Config Mode**: Fallback advisory engine that operates deterministically even without an active API key.
 
-### 6. Ergonomic Human-Computer Interaction (HCI) Design
-- **Pleasant Light & Dark Themes**: High-contrast, legible typography (Inter & Outfit) engineered to reduce eye strain during prolonged study sessions.
-- **Semester Management & Organization**: Grid navigation for fast switching between individual semesters and the full degree cumulative view.
-- **Formula Transparency Modal**: Step-by-step arithmetic breakdown showing the student exactly why their GPA is what it is.
+### 6. Production-Grade Material UI Navigation & Ergonomics
+- **Material UI v6 App Bar**: Responsive desktop and mobile navigation with tabs, avatar profile menu, and light/dark mode switch.
+- **Pleasant Light & Dark Themes**: High-contrast, legible typography engineered to reduce eye strain during prolonged study sessions.
 - **Local Persistence & Export**: Autosaves locally in `localStorage`. Includes printable academic transcript summary and CSV export.
 
 ---
@@ -94,31 +104,43 @@ Configured with pre-loaded presets and editable classification cutoffs for:
 
 ```
 GPA-Calculator/
-├── src/                          # React + TypeScript Frontend
+├── src/                          # React 19 + TypeScript Frontend
 │   ├── components/
-│   │   ├── layout/               # Navbar & Footer (with Sadeesha Jayaweera attribution)
+│   │   ├── layout/               # Material UI Navbar & Footer (with author attribution)
+│   │   ├── auth/                 # GoogleSignInModal (Official Google Sign-In action)
 │   │   ├── dashboard/            # GPASummaryCards, DegreeProgressBar, HowItCalculatedModal
 │   │   ├── calculator/           # SemesterManager, SubjectTable, GradingScaleSidebar
 │   │   ├── planner/              # TargetGPACalculator, ScenarioSandbox
 │   │   ├── ai/                   # AIAdvisorChat (Gemini conversational interface)
 │   │   ├── charts/               # AcademicCharts (Recharts line & bar visualizations)
-│   │   ├── settings/             # GradingSettingsModal
+│   │   ├── settings/             # AISettingsModal (Cloud API configuration)
 │   │   ├── export/               # ExportReportModal (Print / CSV summary)
-│   │   └── about/                # AboutSection (HCI guidelines & degree rules)
+│   │   └── about/                # AboutSection (Degree bylaws & rules)
+│   ├── contexts/
+│   │   └── AuthContext.tsx       # Persistent Google session & Firebase auth management
+│   ├── theme/
+│   │   └── muiTheme.ts           # Material UI v6 unified theme system
 │   ├── lib/
+│   │   ├── firebase.ts           # Firebase App, Auth, and Firestore initialization
+│   │   ├── db.ts                 # Offline-first user-scoped caching & cloud sync
+│   │   ├── geminiClient.ts       # Multi-tier resilient Gemini caller
 │   │   ├── gpaCalculator.ts      # Pure deterministic calculation functions
 │   │   ├── defaultConfig.ts      # UGC standard & university grading presets
 │   │   └── __tests__/            # Comprehensive Vitest unit test suite (14 tests)
 │   ├── types/                    # Academic data models & TypeScript interfaces
-│   ├── App.tsx                   # Main application controller
-│   └── index.css                 # Tailwind CSS v4 styling & theme variables
+│   ├── App.tsx                   # Main application controller with ThemeProvider
+│   └── index.css                 # Tailwind CSS v4 styling & variables
 ├── server/                       # Node.js + Express TypeScript Backend
 │   └── src/
 │       ├── index.ts              # Express API server & static client handler
 │       ├── routes/aiRoutes.ts    # Zod-validated /api/ai/advisor endpoint
-│       └── services/geminiService.ts # Secure Gemini API handler with math ground truth
+│       └── services/geminiService.ts # Gemini API handler with math ground truth
+├── docs/
+│   └── screenshots/              # High-resolution application screenshots
+├── scripts/
+│   └── captureScreenshots.js     # Puppeteer automated screenshot generation script
 ├── vite.config.ts                # Vite config with backend proxy and Tailwind v4
-└── package.json                  # Scripts for dev, test, and build
+└── package.json                  # Scripts for dev, test, screenshot capture, and build
 ```
 
 ---
@@ -165,14 +187,22 @@ npm test
    ```bash
    npm install
    ```
-3. Set up environment variables (optional for AI Advisor):
+3. Set up environment variables:
    ```bash
    cp .env.example .env
    ```
-   Add your Google Gemini API key to `.env` (obtain free at [Google AI Studio](https://aistudio.google.com/)):
+   Add your Google Gemini API key and Firebase credentials to `.env`:
    ```env
    PORT=3001
    GEMINI_API_KEY=your_gemini_api_key_here
+   VITE_GEMINI_API_KEY=your_gemini_api_key_here
+
+   VITE_FIREBASE_API_KEY=your_firebase_api_key
+   VITE_FIREBASE_AUTH_DOMAIN=your_project.firebaseapp.com
+   VITE_FIREBASE_PROJECT_ID=your_project_id
+   VITE_FIREBASE_STORAGE_BUCKET=your_project.firebasestorage.app
+   VITE_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
+   VITE_FIREBASE_APP_ID=your_app_id
    ```
 
 ### Running Locally
@@ -181,6 +211,12 @@ Run both the Express backend and the Vite frontend concurrently:
 npm run dev
 ```
 Open **[http://localhost:5173](http://localhost:5173)** in your browser.
+
+### Capturing Screenshots Automatically
+To re-generate fresh screenshots with Puppeteer:
+```bash
+npm run capture:screenshots
+```
 
 ### Building for Production
 ```bash
