@@ -1,50 +1,103 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { User, signInWithPopup, signOut, onAuthStateChanged } from 'firebase/auth';
-import { auth, googleProvider } from '../lib/firebase';
+import { auth, googleProvider, isFirebaseConfigured } from '../lib/firebase';
+import { GoogleSignInModal } from '../components/auth/GoogleSignInModal';
+
+export interface AppUser {
+  uid: string;
+  displayName: string | null;
+  email: string | null;
+  photoURL: string | null;
+  getIdToken?: () => Promise<string>;
+}
 
 interface AuthContextType {
-  currentUser: User | null;
+  currentUser: AppUser | null;
   loading: boolean;
   loginWithGoogle: () => Promise<void>;
   logout: () => Promise<void>;
+  isConfigured: boolean;
 }
 
 const AuthContext = createContext<AuthContextType>({
   currentUser: null,
-  loading: true,
+  loading: false,
   loginWithGoogle: async () => {},
   logout: async () => {},
+  isConfigured: false,
 });
 
 export const useAuth = () => useContext(AuthContext);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [currentUser, setCurrentUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [currentUser, setCurrentUser] = useState<AppUser | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setCurrentUser(user);
-      setLoading(false);
-    });
-    return unsubscribe;
+    // 1. Immediately restore persistent Google session from localStorage if present
+    const savedLocalUser = localStorage.getItem('gpa_google_user');
+    if (savedLocalUser) {
+      try {
+        const parsed = JSON.parse(savedLocalUser);
+        setCurrentUser(parsed);
+      } catch {
+        localStorage.removeItem('gpa_google_user');
+      }
+    }
+
+    // 2. Synchronize with Firebase Auth session
+    if (auth && isFirebaseConfigured) {
+      try {
+        const unsubscribe = onAuthStateChanged(auth, (firebaseUser: User | null) => {
+          if (firebaseUser) {
+            const userObj: AppUser = {
+              uid: firebaseUser.uid,
+              displayName: firebaseUser.displayName,
+              email: firebaseUser.email,
+              photoURL: firebaseUser.photoURL,
+              getIdToken: () => firebaseUser.getIdToken(),
+            };
+            localStorage.setItem('gpa_google_user', JSON.stringify(userObj));
+            setCurrentUser(userObj);
+          } else {
+            localStorage.removeItem('gpa_google_user');
+            setCurrentUser(null);
+          }
+          setLoading(false);
+        });
+        return unsubscribe;
+      } catch (e) {
+        console.warn('[Auth] Failed to subscribe to Firebase auth state:', e);
+      }
+    }
+
+    setLoading(false);
   }, []);
 
   const loginWithGoogle = async () => {
+    if (!isFirebaseConfigured || !auth || !googleProvider) {
+      setIsModalOpen(true);
+      return;
+    }
     try {
       await signInWithPopup(auth, googleProvider);
     } catch (error) {
-      console.error("Error signing in with Google:", error);
-      throw error;
+      console.warn('Firebase Google sign-in popup error:', error);
+      setIsModalOpen(true);
     }
   };
 
   const logout = async () => {
-    try {
-      await signOut(auth);
-    } catch (error) {
-      console.error("Error signing out:", error);
+    localStorage.removeItem('gpa_google_user');
+    if (auth && isFirebaseConfigured) {
+      try {
+        await signOut(auth);
+      } catch (error) {
+        console.error('Error signing out of Firebase:', error);
+      }
     }
+    setCurrentUser(null);
   };
 
   const value = {
@@ -52,11 +105,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     loading,
     loginWithGoogle,
     logout,
+    isConfigured: isFirebaseConfigured,
   };
 
   return (
     <AuthContext.Provider value={value}>
-      {!loading && children}
+      {children}
+      <GoogleSignInModal
+        open={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+      />
     </AuthContext.Provider>
   );
 };
