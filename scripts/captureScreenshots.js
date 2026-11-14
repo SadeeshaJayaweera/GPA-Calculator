@@ -14,7 +14,7 @@ async function capture() {
   });
 
   const page = await browser.newPage();
-  await page.setViewport({ width: 1440, height: 960, deviceScaleFactor: 2 });
+  await page.setViewport({ width: 1440, height: 1020, deviceScaleFactor: 2 });
 
   console.log('Navigating to http://localhost:5173...');
   await page.goto('http://localhost:5173', { waitUntil: 'networkidle2' });
@@ -55,6 +55,7 @@ async function capture() {
   // Reload with sample data in light mode
   await page.reload({ waitUntil: 'networkidle2' });
   await new Promise((r) => setTimeout(r, 1200));
+  await page.evaluate(() => window.scrollTo(0, 0));
 
   // 1. Dashboard Light Mode
   console.log('Capturing dashboard-light.png...');
@@ -66,6 +67,7 @@ async function capture() {
     const tabs = Array.from(document.querySelectorAll('button[role="tab"]'));
     const plannerTab = tabs.find((t) => t.textContent && (t.textContent.includes('Planner') || t.getAttribute('value') === 'planner'));
     if (plannerTab) plannerTab.click();
+    window.scrollTo(0, 0);
   });
   await new Promise((r) => setTimeout(r, 1000));
   await page.screenshot({ path: path.join(outDir, 'planner.png'), fullPage: false });
@@ -76,6 +78,7 @@ async function capture() {
     const tabs = Array.from(document.querySelectorAll('button[role="tab"]'));
     const aiTab = tabs.find((t) => t.textContent && (t.textContent.includes('Advisor') || t.getAttribute('value') === 'ai'));
     if (aiTab) aiTab.click();
+    window.scrollTo(0, 0);
   });
   await new Promise((r) => setTimeout(r, 1000));
   await page.screenshot({ path: path.join(outDir, 'ai-advisor.png'), fullPage: false });
@@ -86,6 +89,7 @@ async function capture() {
     const tabs = Array.from(document.querySelectorAll('button[role="tab"]'));
     const gradingTab = tabs.find((t) => t.textContent && (t.textContent.includes('Grading') || t.getAttribute('value') === 'grading'));
     if (gradingTab) gradingTab.click();
+    window.scrollTo(0, 0);
   });
   await new Promise((r) => setTimeout(r, 1000));
   await page.screenshot({ path: path.join(outDir, 'grading-scales.png'), fullPage: false });
@@ -107,7 +111,10 @@ async function capture() {
     const allButtons = Array.from(document.querySelectorAll('button'));
     const themeBtn = allButtons.find((b) => b.getAttribute('title')?.includes('Mode') || b.querySelector('svg[data-testid*="Mode"]'));
     if (themeBtn) themeBtn.click();
+    window.scrollTo(0, 0);
   });
+  await new Promise((r) => setTimeout(r, 1000));
+  await page.screenshot({ path: path.join(outDir, 'dashboard-dark.png'), fullPage: false });
   await new Promise((r) => setTimeout(r, 1000));
   await page.screenshot({ path: path.join(outDir, 'dashboard-dark.png'), fullPage: false });
 

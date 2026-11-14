@@ -485,10 +485,10 @@ export const App: React.FC = () => {
             <div className="max-w-4xl mx-auto space-y-6 animate-fadeIn">
               <div className="flex items-center justify-between">
                 <div>
-                  <h2 className="text-xl font-bold text-white light:text-slate-900">
+                  <h2 className="text-xl font-bold text-slate-900 dark:text-white">
                     Sri Lankan University Grading Scales & Classification Presets
                   </h2>
-                  <p className="text-xs text-purple-300/80 light:text-slate-600">
+                  <p className="text-xs text-slate-600 dark:text-purple-300/80">
                     Switch universities or customize honour thresholds
                   </p>
                 </div>
