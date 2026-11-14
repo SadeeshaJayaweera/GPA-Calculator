@@ -24,7 +24,6 @@ import {
 import {
   AVAILABLE_GRADING_SCALES,
   DEFAULT_CLASSIFICATION_RULES,
-  SAMPLE_SEMESTERS,
 } from './lib/defaultConfig';
 import {
   calculateCGPA,
@@ -33,10 +32,12 @@ import {
   calculateTotalCredits,
   calculateTotalWeightedPoints,
   calculateClassification,
-import { calculateClassification } from './lib/gpaCalculator';
+} from './lib/gpaCalculator';
 import { Sparkles, HelpCircle, GraduationCap, Download } from 'lucide-react';
 import { useAuth } from './contexts/AuthContext';
 import { fetchUserData, saveUserData } from './lib/db';
+import { ThemeProvider } from '@mui/material/styles';
+import { getMuiTheme } from './theme/muiTheme';
 
 export const App: React.FC = () => {
   const { currentUser } = useAuth();
@@ -93,22 +94,37 @@ export const App: React.FC = () => {
         // fallback
       }
     }
-    return SAMPLE_SEMESTERS;
+    return [
+      {
+        id: 'sem-1',
+        name: 'Year 1 — Semester 1',
+        year: 1,
+        semesterNumber: 1,
+        subjects: [],
+      },
+    ];
   });
 
   const [activeSemesterId, setActiveSemesterId] = useState<string | 'all'>('all');
 
-  // Sync with Firestore when User Logs In
+  // Sync with Firestore & Local DB when User Logs In or switches
   useEffect(() => {
     if (currentUser) {
       fetchUserData(currentUser.uid).then((data) => {
-        if (data) {
-          if (data.semesters && data.semesters.length > 0) setSemesters(data.semesters);
+        if (data && data.semesters && data.semesters.length > 0) {
+          setSemesters(data.semesters);
           if (data.classificationRules) setClassificationRules(data.classificationRules);
           if (data.gradingScaleId) {
             const found = AVAILABLE_GRADING_SCALES.find((s) => s.id === data.gradingScaleId);
             if (found) setCurrentGradingScale(found);
           }
+        } else {
+          // If no previous data exists for this user, associate their current academic profile with their account
+          saveUserData(currentUser.uid, {
+            semesters,
+            gradingScaleId: currentGradingScale.id,
+            classificationRules,
+          });
         }
       });
     }
@@ -254,12 +270,6 @@ export const App: React.FC = () => {
     );
   };
 
-  // Preset & Sample Data Actions
-  const handleLoadSampleData = () => {
-    setSemesters(SAMPLE_SEMESTERS);
-    setActiveSemesterId('all');
-  };
-
   const handleResetData = () => {
     if (window.confirm('Are you sure you want to clear your current academic modules?')) {
       setSemesters([
@@ -295,18 +305,17 @@ export const App: React.FC = () => {
   }));
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#f8fafc] text-slate-900 selection:bg-purple-600 selection:text-white dark:bg-[#090514] dark:text-slate-100 transition-colors duration-200">
+    <ThemeProvider theme={getMuiTheme(isDarkMode)}>
+      <div className="min-h-screen flex flex-col bg-[#f8fafc] text-slate-900 selection:bg-purple-600 selection:text-white dark:bg-[#090514] dark:text-slate-100 transition-colors duration-200">
       {/* Navbar */}
       <Navbar
         activeTab={activeTab}
         setActiveTab={setActiveTab}
         isDarkMode={isDarkMode}
         setIsDarkMode={setIsDarkMode}
-        onLoadSampleData={handleLoadSampleData}
         onResetData={handleResetData}
         onOpenExport={() => setIsExportModalOpen(true)}
         onOpenAISettings={() => setIsAISettingsOpen(true)}
-        selectedUniversityName={currentGradingScale.university}
       />
 
       {/* Main Container */}
@@ -385,7 +394,6 @@ export const App: React.FC = () => {
                 onAddSubject={handleAddSubject}
                 onUpdateSubject={handleUpdateSubject}
                 onRemoveSubject={handleRemoveSubject}
-                onLoadSampleData={handleLoadSampleData}
               />
 
               {/* Charts & Analytics */}
@@ -551,6 +559,7 @@ export const App: React.FC = () => {
         onOpenAbout={() => setActiveTab('about')}
       />
     </div>
+    </ThemeProvider>
   );
 };
 

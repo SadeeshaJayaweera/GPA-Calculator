@@ -15,28 +15,42 @@ export const AISettingsModal: React.FC<AISettingsModalProps> = ({ isOpen, onClos
   const [status, setStatus] = useState<'idle' | 'success' | 'error'>('idle');
 
   useEffect(() => {
-    if (isOpen && currentUser) {
-      fetchUserData(currentUser.uid).then((data) => {
-        if (data && data.geminiApiKey) {
-          setApiKey(data.geminiApiKey);
-        }
-      });
+    if (isOpen) {
+      const savedKey = localStorage.getItem('gemini_api_key') || '';
+      setApiKey(savedKey);
+
+      if (currentUser) {
+        fetchUserData(currentUser.uid).then((data) => {
+          if (data && data.geminiApiKey) {
+            setApiKey(data.geminiApiKey);
+          }
+        });
+      }
     }
   }, [isOpen, currentUser]);
 
   if (!isOpen) return null;
 
   const handleSave = async () => {
-    if (!currentUser) return;
     setIsSaving(true);
     setStatus('idle');
     try {
-      await saveUserData(currentUser.uid, { geminiApiKey: apiKey.trim() });
+      const trimmed = apiKey.trim();
+      if (trimmed) {
+        localStorage.setItem('gemini_api_key', trimmed);
+      } else {
+        localStorage.removeItem('gemini_api_key');
+      }
+
+      if (currentUser) {
+        await saveUserData(currentUser.uid, { geminiApiKey: trimmed });
+      }
+
       setStatus('success');
       setTimeout(() => {
         onClose();
         setStatus('idle');
-      }, 1500);
+      }, 1200);
     } catch (error) {
       console.error(error);
       setStatus('error');
