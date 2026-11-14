@@ -22,8 +22,8 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType>({
   currentUser: null,
   loading: false,
-  loginWithGoogle: async () => {},
-  logout: async () => {},
+  loginWithGoogle: async () => { },
+  logout: async () => { },
   isConfigured: false,
 });
 

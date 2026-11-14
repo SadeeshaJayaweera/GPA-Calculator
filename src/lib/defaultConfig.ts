@@ -19,7 +19,7 @@ export const AVAILABLE_GRADING_SCALES: GradingScale[] = [
   {
     id: 'ugc-standard',
     name: 'Sri Lankan UGC Standard (General)',
-    university: 'All Sri Lankan Universities (Default)',
+    university: 'Sri Lankan UGC Standard',
     isDefault: true,
     grades: DEFAULT_UGC_GRADES,
   },

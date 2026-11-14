@@ -21,27 +21,27 @@ A modern, production-grade **GPA + CGPA + Degree Class Prediction + Academic Pla
 ### 1. Dashboard & Cumulative GPA Calculator (Clean Light Mode)
 *Ergonomic, distraction-free interface featuring a Material UI v6 App Bar, real-time degree classification progress bar, credit summary metrics, multi-semester management, and live credit-weighted grade-point calculations.*
 
-![GPA Mate LK Dashboard Light Mode](docs/screenshots/dashboard-light.png)
+![GPA Mate LK Dashboard Light Mode](docs/screenshots/dashboard-light.png?raw=true&v=2)
 
 ### 2. Academic Target & "What-If" Scenario Sandbox
 *Determine the exact required future GPA to reach target degree classes (First Class, 2:1, 2:2) alongside interactive future module simulations with customizable credit weighting.*
 
-![Target and Scenario Planner](docs/screenshots/planner.png)
+![Target and Scenario Planner](docs/screenshots/planner.png?raw=true&v=2)
 
 ### 3. Google Gemini AI Academic Advisor (Grounded with Ground Truth)
 *Intelligent conversational assistant powered by Google Gemini, personally greeting students by their Google account profile, automatically calculating remaining credit feasibility, and enforcing zero mathematical hallucinations.*
 
-![Google Gemini AI Academic Advisor](docs/screenshots/ai-advisor.png)
+![Google Gemini AI Academic Advisor](docs/screenshots/ai-advisor.png?raw=true&v=2)
 
 ### 4. University Grading Scale Presets & Custom Classification Cutoffs
 *Pre-configured grading systems for Sri Lankan UGC standard and top state/private universities (SLIIT, NSBM, IIT, Colombo, Moratuwa, USJ, Kelaniya, Peradeniya).*
 
-![University Grading Scales](docs/screenshots/grading-scales.png)
+![University Grading Scales](docs/screenshots/grading-scales.png?raw=true&v=2)
 
 ### 5. High-Contrast Dark Mode
 *Engineered for night study sessions, featuring deep contrast palettes, fluid card elevation, and seamless theme synchronization.*
 
-![GPA Mate LK Dashboard Dark Mode](docs/screenshots/dashboard-dark.png)
+![GPA Mate LK Dashboard Dark Mode](docs/screenshots/dashboard-dark.png?raw=true&v=2)
 
 ---
 
