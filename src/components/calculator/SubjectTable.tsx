@@ -9,7 +9,6 @@ interface SubjectTableProps {
   onAddSubject: () => void;
   onUpdateSubject: (id: string, updates: Partial<Subject>) => void;
   onRemoveSubject: (id: string) => void;
-  onLoadSampleData: () => void;
 }
 
 export const SubjectTable: React.FC<SubjectTableProps> = ({
@@ -18,7 +17,6 @@ export const SubjectTable: React.FC<SubjectTableProps> = ({
   onAddSubject,
   onUpdateSubject,
   onRemoveSubject,
-  onLoadSampleData,
 }) => {
   return (
     <div className="rounded-2xl bg-white border border-slate-200/80 p-4 sm:p-6 shadow-xs dark:bg-[#120826] dark:border-purple-900/30">
@@ -55,19 +53,13 @@ export const SubjectTable: React.FC<SubjectTableProps> = ({
           <p className="text-xs text-slate-500 dark:text-slate-400 max-w-sm mx-auto mt-1 mb-4">
             Add your semester modules and credit values to calculate your exact weighted GPA.
           </p>
-          <div className="flex items-center justify-center gap-3">
+          <div className="flex items-center justify-center">
             <button
               onClick={onAddSubject}
               className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-purple-600 text-white text-xs font-semibold hover:bg-purple-700 transition-colors shadow-sm"
             >
               <Plus className="w-4 h-4" />
               Add Your First Subject
-            </button>
-            <button
-              onClick={onLoadSampleData}
-              className="px-4 py-2 rounded-xl bg-slate-100 text-slate-700 border border-slate-200 text-xs font-semibold hover:bg-purple-50 hover:text-purple-700 dark:bg-purple-950/60 dark:text-purple-300 dark:border-purple-800/50 transition-colors"
-            >
-              Load Sample Data
             </button>
           </div>
         </div>
