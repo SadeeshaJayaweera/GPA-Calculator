@@ -2,7 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import path from 'path';
-import * as admin from 'firebase-admin';
+import admin from 'firebase-admin';
 import aiRoutes from './routes/aiRoutes';
 
 dotenv.config();
@@ -15,10 +15,11 @@ try {
       credential: admin.credential.cert(serviceAccount)
     });
     console.log('[Firebase Admin] Initialized successfully with provided service account.');
-  } else {
-    // Attempt default initialization (works if ADC is set or in some cloud environments)
+  } else if (process.env.GOOGLE_APPLICATION_CREDENTIALS) {
     admin.initializeApp();
     console.log('[Firebase Admin] Initialized with default credentials.');
+  } else {
+    console.log('[Firebase Admin] No service account or credentials configured. Skipping Firebase Admin initialization.');
   }
 } catch (error) {
   console.warn('[Firebase Admin] Failed to initialize:', (error as Error).message);
@@ -59,7 +60,8 @@ app.use((req, res, next) => {
   });
 });
 
-app.listen(PORT, () => {
-  console.log(`[GPA Mate LK API] Server running on http://localhost:${PORT}`);
+const HOST = '127.0.0.1';
+app.listen(Number(PORT), HOST, () => {
+  console.log(`[GPA Mate LK API] Server running on http://${HOST}:${PORT}`);
   console.log(`[GPA Mate LK API] Gemini Key Configured: ${Boolean(process.env.GEMINI_API_KEY && process.env.GEMINI_API_KEY.trim().length > 0)}`);
 });

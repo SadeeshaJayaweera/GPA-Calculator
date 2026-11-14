@@ -1,0 +1,239 @@
+import { AIAdvisorRequest, AIAdvisorResponse } from '../types/academic';
+
+function computeMathContext(data: AIAdvisorRequest) {
+  const currentWeighted = data.currentCGPA * data.completedCredits;
+  const totalFutureCredits = data.completedCredits + data.remainingCredits;
+
+  const maxPossibleCGPA =
+    data.remainingCredits > 0
+      ? Number(((currentWeighted + data.remainingCredits * 4.0) / totalFutureCredits).toFixed(2))
+      : Number(data.currentCGPA.toFixed(2));
+
+  let requiredFutureGPA = 0;
+  let isAchievable = true;
+
+  if (data.remainingCredits > 0) {
+    const rawRequired =
+      (data.targetCGPA * totalFutureCredits - currentWeighted) / data.remainingCredits;
+    requiredFutureGPA = Number(rawRequired.toFixed(2));
+    isAchievable = rawRequired <= 4.0;
+  } else {
+    isAchievable = data.currentCGPA >= data.targetCGPA;
+  }
+
+  return {
+    currentCGPA: data.currentCGPA,
+    completedCredits: data.completedCredits,
+    remainingCredits: data.remainingCredits,
+    requiredFutureGPA,
+    maxPossibleCGPA,
+    isAchievable,
+  };
+}
+
+function computeRecommendations(mathContext: ReturnType<typeof computeMathContext>, targetCGPA: number): string[] {
+  const recommendations: string[] = [];
+  if (mathContext.remainingCredits <= 0) {
+    if (mathContext.currentCGPA >= targetCGPA) {
+      recommendations.push('You have already secured your target CGPA!');
+    } else {
+      recommendations.push('No remaining credits left. Consider retaking deficiency modules if your university allows.');
+    }
+  } else if (!mathContext.isAchievable) {
+    recommendations.push(`Maximum mathematically possible CGPA is ${mathContext.maxPossibleCGPA.toFixed(2)}.`);
+    recommendations.push('Consider recalibrating your target or inquiring about module repeat / grade improvement policies at your university.');
+  } else if (mathContext.requiredFutureGPA >= 3.7) {
+    recommendations.push('Aim for A/A+ (4.0) in high-weight modules (3 to 6 credits) to relieve pressure on smaller modules.');
+    recommendations.push('Prioritize coursework and continuous assessments (typically 30-50% in Sri Lankan universities).');
+  } else if (mathContext.requiredFutureGPA >= 3.0) {
+    recommendations.push('Target consistent B+ to A- grades across remaining subjects.');
+    recommendations.push('Form peer study circles for challenging computing/engineering modules.');
+  } else {
+    recommendations.push('Maintain steady pass grades above C+ to comfortably protect your standing.');
+  }
+  return recommendations;
+}
+
+function computeFallbackAnswer(mathContext: ReturnType<typeof computeMathContext>, targetCGPA: number): string {
+  if (!mathContext.isAchievable) {
+    return `### ⚠️ Target Analysis
+Based on your current **${mathContext.currentCGPA.toFixed(2)} CGPA** with **${mathContext.completedCredits} completed credits**, reaching **${targetCGPA.toFixed(2)}** is **mathematically impossible** within your remaining **${mathContext.remainingCredits} credits**.
+
+Even if you achieve a straight **4.00 (A+)** across all remaining subjects, your maximum achievable cumulative GPA is **${mathContext.maxPossibleCGPA.toFixed(2)}**.
+
+#### Strategic Suggestions:
+- Consider aiming for **${mathContext.maxPossibleCGPA.toFixed(2)}** or the nearest degree classification (such as Second Class Upper or Second Class Lower).
+- Check your university's **repeat / retake policy**: some Sri Lankan universities allow upgrading C-, D, or E grades by re-sitting exams, which can raise your weighted base.`;
+  } else if (mathContext.remainingCredits > 0) {
+    return `### 🎯 Academic Target Assessment
+To achieve your target CGPA of **${targetCGPA.toFixed(2)}**, you must maintain an average GPA of **${mathContext.requiredFutureGPA.toFixed(2)}** across your remaining **${mathContext.remainingCredits} credits**.
+
+#### Key Mathematical Facts:
+- **Current CGPA**: ${mathContext.currentCGPA.toFixed(2)} (${mathContext.completedCredits} credits completed)
+- **Required Future GPA**: **${mathContext.requiredFutureGPA.toFixed(2)}**
+- **Maximum Possible CGPA**: ${mathContext.maxPossibleCGPA.toFixed(2)} (if you score 4.0 in all future modules)
+
+#### High-Yield Recommendations:
+1. **Focus on Heavy-Credit Modules**: Modules with 4 to 6 credits (like Final Year Projects or Software Architecture) have 2x-3x the impact of 2-credit electives. Securing an A or A+ in these modules provides the highest mathematical boost.
+2. **Maximize Continuous Assessment (CA)**: In Sri Lankan universities, labs, assignments, and midterms typically comprise 30% to 50% of the grade. Aiming for 90%+ in CA reduces pressure in the final end-semester exam.
+3. **Avoid Deficiency Grades**: A single C- or D grade significantly drags down the cumulative score and requires multiple 4.0 modules to counterbalance.`;
+  } else {
+    return `### 📊 Academic Overview
+You currently have **${mathContext.completedCredits} credits** with a **${mathContext.currentCGPA.toFixed(2)} CGPA**. Enter your remaining upcoming subjects in the Academic Planner to model target scenarios!`;
+  }
+}
+
+/**
+ * Direct browser call to Google Gemini REST API
+ */
+async function callGeminiDirect(
+  request: AIAdvisorRequest,
+  apiKey: string,
+  mathContext: ReturnType<typeof computeMathContext>,
+  recommendations: string[]
+): Promise<AIAdvisorResponse> {
+  const cleanKey = apiKey.trim().replace(/^["']|["']$/g, '');
+
+  const systemPrompt = `You are the AI Academic Planning Advisor for "GPA Mate LK", an academic planning platform built specifically for Sri Lankan university undergraduates (UGC state universities like Colombo, Moratuwa, Kelaniya, USJ, Peradeniya, and leading institutions like SLIIT, NSBM, IIT).
+The application developer is Sadeesha Jayaweera.
+${
+  request.studentName
+    ? `\nSTUDENT IDENTITY (Google Account Linked):
+- Student Name: ${request.studentName}
+- Email: ${request.studentEmail || 'Google Account Linked'}
+- Instructions: Address ${request.studentName.split(' ')[0]} personally and warmly at the beginning of your response (e.g. "Hello ${request.studentName.split(' ')[0]}!"). Acknowledge that their Google account and academic profile are connected.\n`
+    : ''
+}
+IMPORTANT GUARDRAILS:
+1. The deterministic mathematical GPA engine has already calculated the student's true standing:
+   - Current CGPA: ${mathContext.currentCGPA.toFixed(2)}
+   - Completed Credits: ${mathContext.completedCredits}
+   - Remaining Credits: ${mathContext.remainingCredits}
+   - Target CGPA: ${request.targetCGPA.toFixed(2)}
+   - Required Future GPA: ${mathContext.requiredFutureGPA.toFixed(2)}
+   - Max Achievable CGPA: ${mathContext.maxPossibleCGPA.toFixed(2)}
+   - Target Achievable?: ${mathContext.isAchievable ? 'YES' : 'NO (Mathematically unreachable)'}
+   - University: ${request.university || 'Sri Lankan University'}
+   - Degree Program: ${request.degree || 'Undergraduate Degree'}
+
+2. You MUST NOT contradict these numbers or invent different mathematical results.
+3. Explicitly state what is a CALCULATED FACT vs what is a STRATEGIC SUGGESTION.
+4. Keep the tone encouraging, pragmatic, professional, and tailored to Sri Lankan undergraduate academic realities (semester systems, credit weights, final year projects, exams vs continuous assessments).
+5. Format your response cleanly with markdown, bullet points, and concise sections.`;
+
+  const userContent = `Student Question: "${request.userMessage}"
+Additional Academic Details:
+${request.semestersSummary ? JSON.stringify(request.semestersSummary) : 'None'}
+${request.upcomingSubjects ? 'Upcoming Subjects: ' + JSON.stringify(request.upcomingSubjects) : ''}`;
+
+  const promptText = `${systemPrompt}\n\n${userContent}`;
+
+  const models = ['gemini-3.5-flash-lite', 'gemini-3.5-flash', 'gemini-3.8-flash', 'gemini-flash-latest'];
+  let lastError: unknown = null;
+
+  for (const model of models) {
+    try {
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${cleanKey}`;
+      const res = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: promptText }] }],
+        }),
+      });
+
+      if (!res.ok) {
+        const errJson = await res.json().catch(() => ({}));
+        throw new Error(errJson?.error?.message || `HTTP ${res.status}`);
+      }
+
+      const result = await res.json();
+      const generatedText = result?.candidates?.[0]?.content?.parts?.[0]?.text;
+
+      if (generatedText) {
+        return {
+          answer: generatedText,
+          source: 'gemini',
+          mathematicalSummary: mathContext,
+          recommendations,
+        };
+      }
+    } catch (e) {
+      lastError = e;
+      console.warn(`[Gemini Direct] Attempt with ${model} failed:`, e);
+    }
+  }
+
+  throw lastError || new Error('All Gemini models failed');
+}
+
+/**
+ * Universal AI Advisor caller with multi-tier fallback:
+ * 1. Vite proxy /api/ai/advisor
+ * 2. Direct backend http://127.0.0.1:3001/api/ai/advisor
+ * 3. Direct browser Gemini API
+ * 4. Deterministic mathematical advisory engine
+ */
+export async function requestAIAdvisor(
+  payload: AIAdvisorRequest,
+  idToken?: string
+): Promise<AIAdvisorResponse> {
+  const localKey = (localStorage.getItem('gemini_api_key') || (import.meta.env.VITE_GEMINI_API_KEY as string) || '').trim();
+  const mathContext = computeMathContext(payload);
+  const recommendations = computeRecommendations(mathContext, payload.targetCGPA);
+
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json',
+  };
+  if (idToken) {
+    headers['Authorization'] = `Bearer ${idToken}`;
+  }
+  if (localKey) {
+    headers['x-gemini-api-key'] = localKey;
+  }
+
+  // Tier 1: Try Vite proxy endpoint
+  try {
+    const res = await fetch('/api/ai/advisor', {
+      method: 'POST',
+      headers,
+      body: JSON.stringify(payload),
+    });
+    if (res.ok) {
+      return await res.json();
+    }
+  } catch (err) {
+    console.warn('[AI Advisor] Proxy call failed, attempting direct backend:', err);
+  }
+
+  // Tier 2: Try direct backend endpoint (bypassing Vite proxy)
+  try {
+    const res = await fetch('http://127.0.0.1:3001/api/ai/advisor', {
+      method: 'POST',
+      headers,
+      body: JSON.stringify(payload),
+    });
+    if (res.ok) {
+      return await res.json();
+    }
+  } catch (err) {
+    console.warn('[AI Advisor] Direct backend call failed, attempting direct Gemini API:', err);
+  }
+
+  // Tier 3: Direct browser call to Google Gemini API
+  if (localKey && localKey !== 'your_gemini_api_key_here') {
+    try {
+      return await callGeminiDirect(payload, localKey, mathContext, recommendations);
+    } catch (geminiErr) {
+      console.warn('[AI Advisor] Direct Gemini API failed, falling back to deterministic calculations:', geminiErr);
+    }
+  }
+
+  // Tier 4: Guaranteed Deterministic Mathematical Advice (Zero-Hallucination Fallback)
+  return {
+    answer: computeFallbackAnswer(mathContext, payload.targetCGPA),
+    source: 'deterministic_fallback',
+    mathematicalSummary: mathContext,
+    recommendations,
+  };
+}

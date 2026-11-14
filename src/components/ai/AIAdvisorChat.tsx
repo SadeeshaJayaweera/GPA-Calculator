@@ -7,14 +7,17 @@ import {
   User,
   Lightbulb,
   Loader2,
+  Key,
 } from 'lucide-react';
 import { AIAdvisorRequest, AIAdvisorResponse } from '../../types/academic';
-import { auth } from '../../lib/firebase';
+import { useAuth } from '../../contexts/AuthContext';
+import { requestAIAdvisor } from '../../lib/geminiClient';
 
 interface MessageItem {
   id: string;
   sender: 'user' | 'ai';
   text: string;
+  source?: 'gemini' | 'deterministic_fallback';
   recommendations?: string[];
   mathSummary?: AIAdvisorResponse['mathematicalSummary'];
   timestamp: string;
@@ -28,6 +31,7 @@ interface AIAdvisorChatProps {
   universityName: string;
   degreeName: string;
   semestersSummary?: { name: string; credits: number; gpa: number }[];
+  onOpenSettings?: () => void;
 }
 
 export const AIAdvisorChat: React.FC<AIAdvisorChatProps> = ({
@@ -38,7 +42,10 @@ export const AIAdvisorChat: React.FC<AIAdvisorChatProps> = ({
   universityName,
   degreeName,
   semestersSummary = [],
+  onOpenSettings,
 }) => {
+  const { currentUser, loginWithGoogle } = useAuth();
+
   const [messages, setMessages] = useState<MessageItem[]>([
     {
       id: 'welcome',
@@ -55,6 +62,7 @@ export const AIAdvisorChat: React.FC<AIAdvisorChatProps> = ({
 
   const [inputMessage, setInputMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [isLiveGeminiConfigured, setIsLiveGeminiConfigured] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
@@ -64,6 +72,37 @@ export const AIAdvisorChat: React.FC<AIAdvisorChatProps> = ({
   useEffect(() => {
     scrollToBottom();
   }, [messages, isLoading]);
+
+  // When currentUser changes or on initial mount, personalize welcome message if untouched
+  useEffect(() => {
+    if (currentUser) {
+      setMessages((prev) => {
+        if (prev.length === 1 && prev[0].id === 'welcome') {
+          const firstName = currentUser.displayName ? currentUser.displayName.split(' ')[0] : 'Student';
+          return [
+            {
+              ...prev[0],
+              text: `Hello **${firstName}**! I am your personal **AI Academic Planning Advisor**, powered by Google Gemini and backed by the deterministic GPA engine of **GPA Mate LK**.\n\nYour Google account (**${currentUser.displayName || currentUser.email}**) is linked and your **Gemini AI access is active**!\n\nI have loaded your verified academic standing:\n- **Current CGPA**: ${currentCGPA.toFixed(2)}\n- **Completed Credits**: ${completedCredits}\n- **Remaining Credits**: ${remainingCredits}\n- **Target CGPA**: ${targetCGPA.toFixed(2)}\n\nHow can I assist you with your academic planning today?`,
+            },
+          ];
+        }
+        return prev;
+      });
+    }
+  }, [currentUser, currentCGPA, completedCredits, remainingCredits, targetCGPA]);
+
+  useEffect(() => {
+    // Check if Gemini API is configured on server or in localStorage
+    fetch('/api/ai/status')
+      .then((res) => res.json())
+      .then((data) => {
+        const hasKey = Boolean(data.hasServerKey || localStorage.getItem('gemini_api_key'));
+        setIsLiveGeminiConfigured(hasKey);
+      })
+      .catch(() => {
+        setIsLiveGeminiConfigured(Boolean(localStorage.getItem('gemini_api_key')));
+      });
+  }, []);
 
   const quickPrompts = [
     'Can I still reach First Class with my remaining credits?',
@@ -101,37 +140,21 @@ export const AIAdvisorChat: React.FC<AIAdvisorChatProps> = ({
         university: universityName,
         degree: degreeName,
         userMessage: textToSend,
+        studentName: currentUser?.displayName || undefined,
+        studentEmail: currentUser?.email || undefined,
         semestersSummary,
       };
 
       let idToken = '';
-      if (auth.currentUser) {
+      if (currentUser?.getIdToken) {
         try {
-          idToken = await auth.currentUser.getIdToken();
+          idToken = await currentUser.getIdToken();
         } catch (e) {
-          console.warn("Failed to get auth token", e);
+          console.warn('Failed to get auth token:', e);
         }
       }
 
-      const headers: Record<string, string> = {
-        'Content-Type': 'application/json',
-      };
-      
-      if (idToken) {
-        headers['Authorization'] = `Bearer ${idToken}`;
-      }
-
-      const res = await fetch('/api/ai/advisor', {
-        method: 'POST',
-        headers,
-        body: JSON.stringify(payload),
-      });
-
-      if (!res.ok) {
-        throw new Error(`Server returned status ${res.status}`);
-      }
-
-      const data: AIAdvisorResponse = await res.json();
+      const data: AIAdvisorResponse = await requestAIAdvisor(payload, idToken);
 
       setMessages([
         ...newMessages,
@@ -139,6 +162,7 @@ export const AIAdvisorChat: React.FC<AIAdvisorChatProps> = ({
           id: `ai-${Date.now()}`,
           sender: 'ai',
           text: data.answer,
+          source: data.source,
           recommendations: data.recommendations,
           mathSummary: data.mathematicalSummary,
           timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
@@ -176,20 +200,118 @@ export const AIAdvisorChat: React.FC<AIAdvisorChatProps> = ({
                 Gemini Academic Advisor
               </h3>
               <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700 border border-emerald-200 dark:bg-emerald-950/60 dark:text-emerald-300 dark:border-emerald-800/40">
-                Mathematical Guardrails Active
+                Mathematical Ground Truth Active
               </span>
             </div>
             <p className="text-[11px] text-slate-500 dark:text-purple-300/70">
-              Deterministic calculations guarantee zero mathematical hallucination
+              {currentUser
+                ? `Personalized for ${currentUser.displayName || currentUser.email} • Gemini AI Active`
+                : isLiveGeminiConfigured
+                ? 'Gemini 3.5 Flash online with verified academic context'
+                : 'Deterministic calculations guarantee zero mathematical hallucination'}
             </p>
           </div>
         </div>
 
-        <div className="flex items-center gap-2 text-xs text-slate-600 dark:text-slate-400 font-semibold">
-          <ShieldCheck className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
-          <span className="hidden sm:inline">Secure Server API</span>
+        <div className="flex items-center gap-2">
+          {currentUser ? (
+            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-purple-50 dark:bg-purple-950/60 border border-purple-200 dark:border-purple-800/60 text-xs font-semibold text-purple-800 dark:text-purple-200">
+              {currentUser.photoURL ? (
+                <img
+                  src={currentUser.photoURL}
+                  alt=""
+                  className="w-4 h-4 rounded-full"
+                />
+              ) : (
+                <div className="w-4 h-4 rounded-full bg-purple-600 text-white text-[9px] flex items-center justify-center font-bold">
+                  {currentUser.displayName ? currentUser.displayName[0] : 'G'}
+                </div>
+              )}
+              <span className="hidden sm:inline">
+                {currentUser.displayName ? currentUser.displayName.split(' ')[0] : 'Account Linked'}
+              </span>
+              <span className="text-[10px] bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 px-1.5 py-0.5 rounded-full font-bold">
+                Active
+              </span>
+            </div>
+          ) : (
+            <button
+              onClick={loginWithGoogle}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold text-slate-700 dark:text-slate-200 bg-white dark:bg-purple-950/40 border border-slate-300 dark:border-purple-800/40 hover:bg-slate-50 dark:hover:bg-purple-900/40 transition-colors shadow-xs"
+            >
+              <img
+                src="https://www.google.com/favicon.ico"
+                alt="Google"
+                className="w-3.5 h-3.5"
+              />
+              <span className="hidden sm:inline">Sign in with Google</span>
+              <span className="sm:hidden">Sign In</span>
+            </button>
+          )}
+
+          {onOpenSettings && (
+            <button
+              onClick={onOpenSettings}
+              title="Configure Gemini API Key"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold text-purple-700 bg-purple-100/70 hover:bg-purple-200/70 border border-purple-200 dark:bg-purple-950/60 dark:border-purple-800/40 dark:text-purple-300 dark:hover:bg-purple-900/50 transition-colors"
+            >
+              <Key className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">
+                {isLiveGeminiConfigured || currentUser ? 'Gemini Linked' : 'Set Key'}
+              </span>
+            </button>
+          )}
+
+          <div className="flex items-center gap-1.5 text-xs text-slate-600 dark:text-slate-400 font-semibold px-2.5 py-1.5 rounded-xl bg-slate-100 dark:bg-purple-950/40 border border-slate-200 dark:border-purple-900/40">
+            <ShieldCheck className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+            <span className="hidden sm:inline">Secure Server API</span>
+          </div>
         </div>
       </div>
+
+      {/* Google Sign-in Banner (Visible when not signed in) */}
+      {!currentUser && (
+        <div className="p-3 sm:p-3.5 bg-gradient-to-r from-purple-50 via-indigo-50/50 to-purple-50 border-b border-purple-100 flex items-center justify-between gap-3 dark:bg-gradient-to-r dark:from-purple-950/30 dark:via-indigo-950/20 dark:to-purple-950/30 dark:border-purple-900/30">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-lg bg-white dark:bg-[#150a2e] border border-purple-200 dark:border-purple-800/50 flex items-center justify-center shrink-0 shadow-xs">
+              <img src="https://www.google.com/favicon.ico" alt="Google" className="w-4 h-4" />
+            </div>
+            <div>
+              <p className="text-xs font-bold text-slate-900 dark:text-white">
+                Sign in with your Google account to automatically switch to your Gemini AI Advisor
+              </p>
+              <p className="text-[11px] text-slate-500 dark:text-purple-300/70">
+                Unlock instant personalized student counseling, module priorities, and synced degree targets.
+              </p>
+            </div>
+          </div>
+          <button
+            onClick={loginWithGoogle}
+            className="px-3.5 py-1.5 rounded-xl bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold shrink-0 shadow-sm transition-all flex items-center gap-1.5"
+          >
+            <Sparkles className="w-3.5 h-3.5 text-amber-300" />
+            <span>Connect Google</span>
+          </button>
+        </div>
+      )}
+
+      {/* Connected Student Status Bar (Visible when signed in) */}
+      {currentUser && (
+        <div className="px-4 py-2 bg-emerald-50/70 dark:bg-emerald-950/30 border-b border-emerald-100 dark:border-emerald-900/30 flex items-center justify-between text-xs text-emerald-800 dark:text-emerald-300">
+          <div className="flex items-center gap-2">
+            <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+            <span>
+              Signed in as <strong>{currentUser.displayName || currentUser.email}</strong> • Gemini AI Academic Advisor Active
+            </span>
+          </div>
+          <button
+            onClick={loginWithGoogle}
+            className="text-[11px] text-emerald-700 dark:text-emerald-400 hover:underline font-semibold"
+          >
+            Switch Account
+          </button>
+        </div>
+      )}
 
       {/* Chat Messages Log */}
       <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4 bg-white dark:bg-[#120826]">
@@ -211,6 +333,20 @@ export const AIAdvisorChat: React.FC<AIAdvisorChatProps> = ({
                   : 'bg-slate-100/90 text-slate-900 border border-slate-200 rounded-tl-none dark:bg-[#180c33] dark:text-slate-200 dark:border-purple-900/40'
               }`}
             >
+              {/* Source badge for AI */}
+              {msg.sender === 'ai' && msg.source === 'gemini' && (
+                <div className="inline-flex items-center gap-1 text-[10px] font-semibold text-purple-700 dark:text-purple-300 bg-purple-50 dark:bg-purple-950/70 px-2 py-0.5 rounded-md mb-2 border border-purple-200 dark:border-purple-800/40">
+                  <Sparkles className="w-3 h-3 text-amber-500" />
+                  <span>Powered by Google Gemini</span>
+                </div>
+              )}
+              {msg.sender === 'ai' && msg.source === 'deterministic_fallback' && (
+                <div className="inline-flex items-center gap-1 text-[10px] font-semibold text-slate-600 dark:text-slate-400 bg-slate-200/60 dark:bg-slate-800/60 px-2 py-0.5 rounded-md mb-2 border border-slate-300/60 dark:border-slate-700/40">
+                  <ShieldCheck className="w-3 h-3 text-emerald-500" />
+                  <span>Deterministic Advisory Engine</span>
+                </div>
+              )}
+
               {/* Message Content formatted */}
               <div className="whitespace-pre-line text-xs sm:text-sm">
                 {msg.text}
@@ -250,7 +386,7 @@ export const AIAdvisorChat: React.FC<AIAdvisorChatProps> = ({
               <Loader2 className="w-4 h-4 animate-spin text-purple-600" />
             </div>
             <span className="animate-pulse">
-              Gemini is analyzing your credit distribution & formulating advice...
+              Gemini is analyzing your credit distribution & formulating academic guidance...
             </span>
           </div>
         )}
