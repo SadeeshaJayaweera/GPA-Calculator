@@ -1,6 +1,6 @@
 import { Router, Request, Response } from 'express';
 import { z } from 'zod';
-import * as admin from 'firebase-admin';
+import admin from 'firebase-admin';
 import { getAcademicAdvice } from '../services/geminiService';
 
 const router = Router();
@@ -14,6 +14,8 @@ const adviceRequestSchema = z.object({
   university: z.string().optional().default('Sri Lankan University'),
   degree: z.string().optional().default('Undergraduate'),
   userMessage: z.string().min(1, 'Message is required'),
+  studentName: z.string().optional(),
+  studentEmail: z.string().optional(),
   semestersSummary: z
     .array(
       z.object({
@@ -46,9 +48,15 @@ router.post('/advisor', async (req: Request, res: Response) => {
 
     let userApiKey: string | undefined;
 
+    // Check for client-provided custom Gemini API key header
+    const clientKeyHeader = req.headers['x-gemini-api-key'] as string | undefined;
+    if (clientKeyHeader && clientKeyHeader.trim().length > 0) {
+      userApiKey = clientKeyHeader.trim();
+    }
+
     // Check for authorization header
     const authHeader = req.headers.authorization;
-    if (authHeader && authHeader.startsWith('Bearer ')) {
+    if (!userApiKey && authHeader && authHeader.startsWith('Bearer ')) {
       const idToken = authHeader.split('Bearer ')[1];
       try {
         const decodedToken = await admin.auth().verifyIdToken(idToken);
@@ -75,6 +83,20 @@ router.post('/advisor', async (req: Request, res: Response) => {
       error: 'An unexpected error occurred while processing academic advice.',
     });
   }
+});
+
+router.get('/status', (req: Request, res: Response) => {
+  const hasServerKey = Boolean(
+    process.env.GEMINI_API_KEY &&
+    process.env.GEMINI_API_KEY.trim().length > 0 &&
+    process.env.GEMINI_API_KEY !== 'your_gemini_api_key_here'
+  );
+
+  res.json({
+    status: 'ok',
+    hasServerKey,
+    model: 'gemini-3.5-flash-lite',
+  });
 });
 
 export default router;

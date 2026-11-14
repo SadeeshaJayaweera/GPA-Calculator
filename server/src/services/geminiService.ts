@@ -76,7 +76,14 @@ export async function getAcademicAdvice(
 
       const systemPrompt = `You are the AI Academic Planning Advisor for "GPA Mate LK", an academic planning platform built specifically for Sri Lankan university undergraduates (UGC state universities like Colombo, Moratuwa, Kelaniya, USJ, Peradeniya, and leading institutions like SLIIT, NSBM, IIT).
 The application developer is Sadeesha Jayaweera.
-
+${
+  request.studentName
+    ? `\nSTUDENT IDENTITY (Google Account Linked):
+- Student Name: ${request.studentName}
+- Email: ${request.studentEmail || 'Google Account Linked'}
+- Instructions: Address ${request.studentName.split(' ')[0]} personally and warmly at the beginning of your response (e.g. "Hello ${request.studentName.split(' ')[0]}!"). Acknowledge that their Google account and academic profile are connected.\n`
+    : ''
+}
 IMPORTANT GUARDRAILS:
 1. The deterministic mathematical GPA engine has already calculated the student's true standing:
    - Current CGPA: ${mathContext.currentCGPA.toFixed(2)}
@@ -99,20 +106,34 @@ Additional Academic Details:
 ${request.semestersSummary ? JSON.stringify(request.semestersSummary) : 'None'}
 ${request.upcomingSubjects ? 'Upcoming Subjects: ' + JSON.stringify(request.upcomingSubjects) : ''}`;
 
-      const response = await ai.models.generateContent({
-        model: 'gemini-2.5-flash',
-        contents: [
-          { role: 'user', parts: [{ text: `${systemPrompt}\n\n${userContent}` }] },
-        ],
-      });
+      const candidateModels = ['gemini-3.5-flash-lite', 'gemini-3.5-flash', 'gemini-3.8-flash', 'gemini-flash-latest'];
+      let replyText = '';
 
-      const replyText = response.text || 'Unable to generate response from AI Advisor.';
+      for (const modelName of candidateModels) {
+        try {
+          const response = await ai.models.generateContent({
+            model: modelName,
+            contents: [
+              { role: 'user', parts: [{ text: `${systemPrompt}\n\n${userContent}` }] },
+            ],
+          });
+          if (response && response.text) {
+            replyText = response.text;
+            break;
+          }
+        } catch (modelErr) {
+          console.warn(`[Gemini Service] ${modelName} failed, trying next candidate:`, (modelErr as Error).message);
+        }
+      }
 
-      return {
-        answer: replyText,
-        mathematicalSummary: mathContext,
-        recommendations,
-      };
+      if (replyText) {
+        return {
+          answer: replyText,
+          source: 'gemini',
+          mathematicalSummary: mathContext,
+          recommendations,
+        };
+      }
     } catch (err: unknown) {
       console.error('Gemini API call error:', err);
       // Gracefully fall back to rule-based response if API error occurs
@@ -151,6 +172,7 @@ You currently have **${mathContext.completedCredits} credits** with a **${mathCo
 
   return {
     answer: fallbackAnswer,
+    source: 'deterministic_fallback',
     mathematicalSummary: mathContext,
     recommendations,
   };

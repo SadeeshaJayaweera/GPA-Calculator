@@ -475,6 +475,7 @@ export const App: React.FC = () => {
               universityName={currentGradingScale.university}
               degreeName="Undergraduate Degree Program"
               semestersSummary={semestersSummary}
+              onOpenSettings={() => setIsAISettingsOpen(true)}
             />
           </div>
         )}

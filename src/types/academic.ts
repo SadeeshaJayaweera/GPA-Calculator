@@ -92,6 +92,8 @@ export interface AIAdvisorRequest {
   university: string;
   degree: string;
   userMessage: string;
+  studentName?: string;
+  studentEmail?: string;
   semestersSummary?: {
     name: string;
     credits: number;
@@ -105,6 +107,7 @@ export interface AIAdvisorRequest {
 
 export interface AIAdvisorResponse {
   answer: string;
+  source?: 'gemini' | 'deterministic_fallback';
   mathematicalSummary: {
     currentCGPA: number;
     completedCredits: number;
